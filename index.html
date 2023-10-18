@@ -5,7 +5,7 @@
     	<meta name="description" content="This is where your description goes">
     	<meta name="keywords" content="one, two, three">
 
-		<title>Save the Date</title>
+		<title>My Reading List</title>
 
 		<!-- external CSS link -->
 		<link rel="stylesheet" href="css/normalize.css">
@@ -13,17 +13,13 @@
 	</head>
 	<body>
 		<section class="head">
-			<h1>Save The Date!</h1>
+			<h1>My Reading List</h1>
 			<form>
-				<div>
-					<label for="date">Date: </label>
-					<input type="date" name="date" id="date" required>
-				</div>
 				<div>
 					<label for="reason">Info: </label>
 					<input type="text" name="reason" id="reason">
 				</div>
-				<button type="button" name="button" id="save">Save Date</button>
+				<button type="button" name="button" id="save">Search</button>
 			</form>
 		</section>
 		<section class="list">
@@ -43,11 +39,28 @@
 				</tbody>
 			</table>
 		</section>
-		<section class="clear">
-			<button id="clear" type="button">X</button>
-			<span>Clear List</span>
-		</section>
-
 		<script type="text/javascript" src="js/main.js"></script>
 	</body>
 </html>
+
+<!--
+	Site purpose:
+	- search for books via book title / isbn / author
+		- search with drop-down select to pick search topic (title/author/subject/etc)
+	- add / remove individual books to / from a personal list (local storage?)
+		- have checkbox on left of each result to add/remove from personal
+		- each search result should have title, author, cover, publish date
+	- view personal list
+		- will show list of authors with buttons to show books (will then reveal below)
+		- second button to compare w/ author
+		- color list-head (so author name) based on completeness
+			- red 0-10%, orange 11-50%, yellow 51-99%, green 100%
+			- third button to mark "im done" and change color to complete (probably green)
+
+	https://openlibrary.org/developers/api
+
+	Search API 		- Search results for books, authors, and more
+	?? Authors API 	- Retrieve an author and their works by author identifier
+	Covers API 		- Fetch book covers by ISBN or Open Library identifier
+	?? Lists API 	- Reading, modifying, or creating user lists
+-->
