@@ -12,32 +12,59 @@
 		<link rel="stylesheet" href="css/style.css">
 	</head>
 	<body>
-		<section class="head">
+		<div class="bookshelf-left"></div>
+		<div class="bookshelf-right"></div>
+		<header>
 			<h1>My Reading List</h1>
-			<form>
+			<ul>
+				<li>Search</li>
+				<li>My List</li>
+			</ul>
+		</header>
+		<section class="search" id="search">
+			<form class="search-isbn">
 				<div>
-					<label for="reason">Info: </label>
-					<input type="text" name="reason" id="reason">
+					<label for="isbn">ISBN: </label>
+					<input type="text" name="isbn" id="isbn">
 				</div>
-				<button type="button" name="button" id="save">Search</button>
+				<button type="button" name="button" id="search-isbn">Search</button>
 			</form>
+			<form class="search-data">
+				<!--title / author / subject / place / person / publisher-->
+				<ul>
+					<li>
+						<label for="title">Title: </label>
+						<input type="text" name="title" id="title">
+					</li>
+					<li>
+						<label for="author">Author: </label>
+						<input type="text" name="author" id="author">
+					</li>
+					<li>
+						<label for="subject">Subject: </label>
+						<input type="text" name="subject" id="subject">
+					</li>
+					<li>
+						<label for="place">Place: </label>
+						<input type="text" name="place" id="place">
+					</li>
+					<li>
+						<label for="person">Person: </label>
+						<input type="text" name="person" id="person">
+					</li>
+					<li>
+						<label for="publisher">Publisher: </label>
+						<input type="text" name="publisher" id="publisher">
+					</li>
+				</ul>
+				<button type="button" name="button" id="search-data">Search</button>
+			</form>
+			<section class="results">
+
+			</section>
 		</section>
-		<section class="list">
-			<div>
-				<h2>Itinerary</h2>
-				<span>Saved in local storage</span>
-			</div>
-			<table>
-				<thead>
-					<tr>
-						<th id="date" scope="col">Date</td>
-						<th id="expl" scope="col">Reason</td>
-						<th id="fact" scope="col">Did you know...?</td>
-					</tr>
-				</thead>
-				<tbody id="savedDates">
-				</tbody>
-			</table>
+		<section id="my-list">
+
 		</section>
 		<script type="text/javascript" src="js/main.js"></script>
 	</body>
