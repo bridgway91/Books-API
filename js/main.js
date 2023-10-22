@@ -1,8 +1,8 @@
-document.getElementById('save').addEventListener('click', addToLocal);
-document.getElementById('clear').addEventListener('click', clearLocal);
+document.getElementById('search-isbn').addEventListener('click', getBook);
 
-function addToLocal(){
-  const url = `http://numbersapi.com/${date.split('-')[1]}/${date.split('-')[2]}/date?json`
+
+function getBook(){
+  const url = `https://openlibrary.org/isbn/9780140328721.json`
 
   fetch(url)
       .then(res => res.json())
@@ -10,6 +10,6 @@ function addToLocal(){
         console.log(data);
       })
       .catch(err => {
-          console.log(`error ${err}`)
+        console.log(`error ${err}`)
       });
 };

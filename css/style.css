@@ -14,8 +14,234 @@
 /*******************************************/
 
 body {
-  margin: 5%;
   background: linear-gradient(to bottom right, floralwhite, honeydew);
   background-attachment: fixed;
+  display: flex;
+  justify-content: space-around;
+  height: 100%;
 }
 
+.bookshelf-left,
+.bookshelf-right {
+  width: 100px;
+  /* border: 2px solid red; */
+  display: grid;
+  background-color: yellow;
+  background-image: 
+    linear-gradient(
+      #966F33 .5rem,
+      transparent .5rem),
+    linear-gradient(
+      90deg,
+      black .1rem,
+      transparent .1rem),
+    linear-gradient(
+      red 5rem, blue 5rem
+    );
+  background-size: 1rem 5rem;
+  background-position: -0.05rem -0.5rem;
+}
+.bookshelf-left {
+
+}
+.bookshelf-right {
+  order: 2;
+}
+
+main {
+  width: 60%;
+}
+
+/**************
+/* Header
+/**************/
+
+header {
+  display: flex;
+  justify-content: space-between;
+  padding: 2.5rem 0.5rem 0.5rem 0.5rem;
+  border-bottom: 5px solid black;
+  position: fixed;
+  width: 60%;
+  height: 7rem;
+  background: white;
+}
+h1 {
+  font-size: 3rem;
+  font-family: 'Bebas Neue', sans-serif;
+  font-weight: 100;
+  padding: 0;
+  margin: 0;
+}
+header ul {
+  display: flex;
+  align-items: center;
+  list-style: none;
+}
+header li {
+  padding: 0.5rem;
+  border: 1px solid black;
+  border-radius: 0.5rem;
+  background: black;
+  margin-left: 0.5rem;
+}
+header a {
+  color: white;
+  text-decoration: none;
+}
+
+/**************
+/* Search
+/**************/
+
+.search {
+  margin-top: 7.5rem;
+}
+.search-isbn,
+.search-data {
+  border: 2px solid black;
+  margin: 2rem 0;
+  padding: 1.5rem 0.5rem;
+}
+.search-isbn {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+#search-isbn,
+#search-data {
+  font-size: 1.25rem;
+  padding: 0.25rem;
+}
+.search-data ul {
+  display: grid;
+  list-style: none;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 0.5rem;
+}
+.search-data input {
+  width: 100%;
+}
+#search-data {
+  display: block;
+  margin-top: 1rem;
+  margin-left: auto;
+}
+
+/**************
+/* Results
+/**************/
+
+.container {
+  height: minmax(40dvh, 80dvh);
+  overflow: auto;
+  border-bottom: 1px solid black;
+}
+.container div {
+  margin-bottom: 0.5rem;
+  display: grid;
+  grid-template-columns: 5rem 1fr 1fr 1fr 1fr 1fr;
+}
+#results-head {
+  background: black;
+  color: white;
+}
+#results-head * {
+  padding: 0.5rem;
+}
+.container div * {
+  justify-self: center;
+  align-self: center;
+  text-align: center;
+}
+.container img {
+  height: 5rem;
+}
+.container button {
+  height: 2rem;
+  width: 2rem;
+  justify-self: center;
+  align-self: center;
+}
+
+/**************
+/* Graphic
+/**************/
+
+.graphic {
+  margin: 3rem 0;
+  height: 150px;
+  display: flex;
+}
+.shelf {
+  height: 80px;
+  width: 200px;
+  align-self: center;
+  margin: 0 auto;
+  border-bottom: 5px solid brown;
+  border-radius: 5%;
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 2fr;
+}
+.shelf div {
+  height: 100%;
+}
+.book {
+  border: 1px solid black;
+  border-radius: 5%;
+}
+#book-1 {
+  background-color: violet;
+}
+#book-2 {
+  background-color: indigo;
+}
+#book-3 {
+  background-color: blue;
+}
+#book-4 {
+  background-color: green;
+}
+#book-5 {
+  background-color: yellow;
+}
+#book-6 {
+  background-color: orange;
+}
+#book-7 {
+  background-color: red;
+}
+
+/**************
+/* My List
+/**************/
+
+.my-list h2 {
+  font-size: 2rem;
+  font-family: 'Bebas Neue', sans-serif;
+  font-weight: 100;
+  margin-top: 2rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid white;
+}
+.my-list div {
+  margin-bottom: 1rem;
+}
+.my-list h3 {
+  font-size: 1.5rem;
+  font-family: 'Bebas Neue', sans-serif;
+  font-weight: 100;
+  background-color: black;
+  color: white;
+  padding: 0.5rem;
+  box-shadow: grey 2px 2px;
+  border-bottom-right-radius: 1.5rem;
+  cursor: pointer;
+  margin-bottom: 0.5rem;
+}
+.my-list ul {
+  margin-left: 2rem;
+}
+.my-list ul[data-show="false"] {
+  display: none;
+}

@@ -8,72 +8,144 @@
 		<title>My Reading List</title>
 
 		<!-- external CSS link -->
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
 		<link rel="stylesheet" href="css/normalize.css">
 		<link rel="stylesheet" href="css/style.css">
 	</head>
-	<body>
+	<body id="search-anchor">
 		<div class="bookshelf-left"></div>
 		<div class="bookshelf-right"></div>
-		<header>
-			<h1>My Reading List</h1>
-			<ul>
-				<li>Search</li>
-				<li>My List</li>
-			</ul>
-		</header>
-		<section class="search" id="search">
-			<form class="search-isbn">
-				<div>
-					<label for="isbn">ISBN: </label>
-					<input type="text" name="isbn" id="isbn">
-				</div>
-				<button type="button" name="button" id="search-isbn">Search</button>
-			</form>
-			<form class="search-data">
-				<!--title / author / subject / place / person / publisher-->
+		<main>
+			<header>
+				<h1>My Reading List</h1>
 				<ul>
-					<li>
-						<label for="title">Title: </label>
-						<input type="text" name="title" id="title">
-					</li>
-					<li>
-						<label for="author">Author: </label>
-						<input type="text" name="author" id="author">
-					</li>
-					<li>
-						<label for="subject">Subject: </label>
-						<input type="text" name="subject" id="subject">
-					</li>
-					<li>
-						<label for="place">Place: </label>
-						<input type="text" name="place" id="place">
-					</li>
-					<li>
-						<label for="person">Person: </label>
-						<input type="text" name="person" id="person">
-					</li>
-					<li>
-						<label for="publisher">Publisher: </label>
-						<input type="text" name="publisher" id="publisher">
-					</li>
+					<li><a href="#search-anchor">Search</a></li>
+					<li><a href="#my-list">My List</a></li>
 				</ul>
-				<button type="button" name="button" id="search-data">Search</button>
-			</form>
-			<section class="results">
-				<div class="container">
-					<div id="result-0">
-						<button>+</button>
-						<img alt="cover">
-						<span>Title</span>
-						<span>Author</span>
-						<p>Description</p>
+			</header>
+			<section class="search" id="search">
+				<form class="search-isbn">
+					<div>
+						<label for="isbn">ISBN: </label>
+						<input type="text" name="isbn" id="isbn">
 					</div>
-				</div>
+					<button type="button" name="button" id="search-isbn">Search</button>
+				</form>
+				<form class="search-data">
+					<!--title / author / subject / place / person / publisher-->
+					<ul>
+						<li>
+							<label for="title">Title: </label>
+							<input type="text" name="title" id="title">
+						</li>
+						<li>
+							<label for="author">Author: </label>
+							<input type="text" name="author" id="author">
+						</li>
+						<li>
+							<label for="subject">Subject: </label>
+							<input type="text" name="subject" id="subject">
+						</li>
+						<li>
+							<label for="place">Place: </label>
+							<input type="text" name="place" id="place">
+						</li>
+						<li>
+							<label for="person">Person: </label>
+							<input type="text" name="person" id="person">
+						</li>
+						<li>
+							<label for="publisher">Publisher: </label>
+							<input type="text" name="publisher" id="publisher">
+						</li>
+					</ul>
+					<button type="button" name="button" id="search-data">Search</button>
+				</form>
+				<section class="results">
+					<div class="container">
+						<div id="results-head">
+							<span>Add<br>To List</span>
+							<span>Cover</span>
+							<span>Title</span>
+							<span>Author</span>
+							<span>Publisher</span>
+							<span>Publish Date</span>
+						</div>
+						<div id="result-0">
+							<button>+</button>
+							<img src="img\The_Fellowship_Of_The_Ring.jpg" alt="cover">
+							<span>Title</span>
+							<span>Book Writer</span>
+							<span>Orbit</span>
+							<span>01/01/2000</span>
+						</div>
+						<div id="result-1">
+							<button>+</button>
+							<img src="img\The_Fellowship_Of_The_Ring.jpg" alt="cover">
+							<span>Title</span>
+							<span>Author</span>
+							<span>Publisher</span>
+							<span>Publish Date</span>
+						</div>
+						<div id="result-2">
+							<button>+</button>
+							<img src="img\The_Fellowship_Of_The_Ring.jpg" alt="cover">
+							<span>Title</span>
+							<span>Author</span>
+							<span>Publisher</span>
+							<span>Publish Date</span>
+						</div>
+					</div>
+				</section>
 			</section>
-		</section>
-		<section id="my-list">
-
-		</section>
+			<section class="graphic">
+				<section class="shelf">
+					<div></div>
+					<div class="book" id="book-1"></div>
+					<div class="book" id="book-2"></div>
+					<div class="book" id="book-3"></div>
+					<div class="book" id="book-4"></div>
+					<div class="book" id="book-5"></div>
+					<div class="book" id="book-6"></div>
+					<div class="book" id="book-7"></div>
+					<div></div>
+				</section>
+			</section>
+			<section class="my-list" id="my-list">
+				<h2>My List</h2>
+				<section id="my-list-authors">
+					<div>
+						<h3>Book Writer #1</h3>
+						<ul data-show="true">
+							<li>01/01/2000 - Title, Orbit</li>
+							<li>01/01/2000 - Title, Orbit</li>
+							<li>01/01/2000 - Title, Orbit</li>
+							<li>01/01/2000 - Title, Orbit</li>
+						</ul>
+					</div>
+					<div>
+						<h3>Book Writer #2</h3>
+						<ul data-show="true">
+							<li>01/01/2000 - Title, Orbit</li>
+							<li>01/01/2000 - Title, Orbit</li>
+							<li>01/01/2000 - Title, Orbit</li>
+							<li>01/01/2000 - Title, Orbit</li>
+						</ul>
+					</div>
+					<div>
+						<h3>Book Writer #3</h3>
+						<ul data-show="true">
+							<li>01/01/2000 - Title, Orbit</li>
+							<li>01/01/2000 - Title, Orbit</li>
+							<li>01/01/2000 - Title, Orbit</li>
+							<li>01/01/2000 - Title, Orbit</li>
+						</ul>
+					</div>
+				</section>
+			</section>
+		</main>
 		<script type="text/javascript" src="js/main.js"></script>
 	</body>
 </html>
@@ -81,10 +153,10 @@
 <!--
 	Site purpose:
 	- search for books via book title / isbn / author
-		- search with drop-down select to pick search topic (title/author/subject/etc)
+		- can do just isbn, or a mix of options (can have multiple, so instead of doing a dropdown just made inputs for all accepted search items)
 	- add / remove individual books to / from a personal list (local storage?)
-		- have checkbox on left of each result to add/remove from personal
-		- each search result should have title, author, cover, publish date
+		- have +/- on left of each result to add/remove from personal
+		- each search result should have title, author, cover, publish date, publisher
 	- view personal list
 		- will show list of authors with buttons to show books (will then reveal below)
 		- second button to compare w/ author
