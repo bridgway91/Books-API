@@ -40,6 +40,15 @@ body {
 .bookshelf-right div {
   background-image: 
     linear-gradient(
+      black 0, transparent 0.5rem, transparent 4rem, black 5rem,
+      transparent 5.5rem, transparent 9rem, black 10rem,
+      transparent 10.5rem, transparent 14rem, black 15rem,
+      transparent 15.5rem, transparent 19rem, black 20rem,
+      transparent 20.5rem, transparent 24rem, black 25rem,
+      transparent 25.5rem, transparent 29rem, black 30rem,
+      transparent 30.5rem, transparent 34rem, black 35rem
+      ),
+    linear-gradient(
       violet 5rem,indigo 5rem,
       indigo 10rem, blue 10rem,
       blue 15rem, green 15rem,
@@ -50,8 +59,14 @@ body {
   background-size: auto 35rem;
   z-index: -1;
 }
+.bookshelf-left {
+  border-left: 5px solid #966F33;
+  box-shadow: -5px 5px 15px black;
+}
 .bookshelf-right {
   order: 2;
+  border-right: 5px solid #966F33;
+  box-shadow: 5px 5px 15px black;
 }
 
 main {
