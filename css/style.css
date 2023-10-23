@@ -24,9 +24,7 @@ body {
 .bookshelf-left,
 .bookshelf-right {
   width: 100px;
-  /* border: 2px solid red; */
   display: grid;
-  background-color: yellow;
   background-image: 
     linear-gradient(
       #966F33 .5rem,
@@ -34,15 +32,23 @@ body {
     linear-gradient(
       90deg,
       black .1rem,
-      transparent .1rem),
-    linear-gradient(
-      red 5rem, blue 5rem
-    );
+      transparent .1rem);
   background-size: 1rem 5rem;
   background-position: -0.05rem -0.5rem;
 }
-.bookshelf-left {
-
+.bookshelf-left div,
+.bookshelf-right div {
+  background-image: 
+    linear-gradient(
+      violet 5rem,indigo 5rem,
+      indigo 10rem, blue 10rem,
+      blue 15rem, green 15rem,
+      green 20rem, yellow 20rem,
+      yellow 25rem, orange 25rem,
+      orange 30rem, red 30rem
+      );
+  background-size: auto 35rem;
+  z-index: -1;
 }
 .bookshelf-right {
   order: 2;
