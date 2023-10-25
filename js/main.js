@@ -1,8 +1,14 @@
 document.getElementById('search-isbn').addEventListener('click', getBook);
+document.getElementById('search-data').addEventListener('click', getBook);
+document.querySelector('body').addEventListener('click', toggleBookList);
+document.querySelector('body').addEventListener('click', toggleShowAuthor);
+
+
 
 
 function getBook(){
-  const url = `https://openlibrary.org/isbn/9780140328721.json`
+  let url;
+  seturl(url);
 
   fetch(url)
       .then(res => res.json())
@@ -13,3 +19,11 @@ function getBook(){
         console.log(`error ${err}`)
       });
 };
+
+function seturl() {
+  if (event.target.id == 'search-isbn') {
+    console.log('isbn search');
+  } else if (event.target.id == 'search-data') {
+    console.log('data search');
+  };
+}
