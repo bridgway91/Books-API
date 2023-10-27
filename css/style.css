@@ -134,6 +134,11 @@ header a {
   font-size: 1.25rem;
   padding: 0.25rem;
 }
+.search-isbn span {
+  color: red;
+  font-weight: bold;
+  display: none;
+}
 .search-data ul {
   display: grid;
   list-style: none;
