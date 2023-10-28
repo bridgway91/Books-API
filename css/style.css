@@ -134,7 +134,7 @@ header a {
   font-size: 1.25rem;
   padding: 0.25rem;
 }
-.search-isbn span {
+#isbn-error {
   color: red;
   font-weight: bold;
   display: none;

@@ -30,7 +30,7 @@
 					<div>
 						<label for="isbn">ISBN: </label>
 						<input type="text" name="isbn" id="isbn">
-						<span>Invalid ISBN</span>
+						<span id="isbn-error">Invalid ISBN</span>
 					</div>
 					<button type="button" name="button" id="search-isbn">Search</button>
 				</form>
@@ -74,30 +74,32 @@
 							<span>Publisher</span>
 							<span>Publish Date</span>
 						</div>
-						<div id="result-0">
-							<button>+</button>
-							<img src="img\The_Fellowship_Of_The_Ring.jpg" alt="cover">
-							<span>Title</span>
-							<span>Book Writer</span>
-							<span>Orbit</span>
-							<span>01/01/2000</span>
-						</div>
-						<div id="result-1">
-							<button>+</button>
-							<img src="img\The_Fellowship_Of_The_Ring.jpg" alt="cover">
-							<span>Title</span>
-							<span>Author</span>
-							<span>Publisher</span>
-							<span>Publish Date</span>
-						</div>
-						<div id="result-2">
-							<button>+</button>
-							<img src="img\The_Fellowship_Of_The_Ring.jpg" alt="cover">
-							<span>Title</span>
-							<span>Author</span>
-							<span>Publisher</span>
-							<span>Publish Date</span>
-						</div>
+						<section id="search-results">
+							<div id="result-0">
+								<button>+</button>
+								<img src="img\The_Fellowship_Of_The_Ring.jpg" alt="cover">
+								<span>Title</span>
+								<span>Book Writer</span>
+								<span>Orbit</span>
+								<span>01/01/2000</span>
+							</div>
+							<div id="result-1">
+								<button>+</button>
+								<img src="img\The_Fellowship_Of_The_Ring.jpg" alt="cover">
+								<span>Title</span>
+								<span>Author</span>
+								<span>Publisher</span>
+								<span>Publish Date</span>
+							</div>
+							<div id="result-2">
+								<button>+</button>
+								<img src="img\The_Fellowship_Of_The_Ring.jpg" alt="cover">
+								<span>Title</span>
+								<span>Author</span>
+								<span>Publisher</span>
+								<span>Publish Date</span>
+							</div>
+						</section>
 					</div>
 				</section>
 			</section>
