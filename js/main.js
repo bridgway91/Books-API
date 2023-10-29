@@ -57,7 +57,27 @@ function getBook(){
         });
     }
   } else if (event.target.id == 'search-data') {
-    console.log('data search');
+    results.innerHTML = '';
+
+    let searchString = '';
+    if (title) {searchString ? searchString += `&title=${title}` : searchString += `?title=${title}`};
+    if (author) {searchString ? searchString += `&author=${author}` : searchString += `?author=${author}`};
+    if (subject) {searchString ? searchString += `&subject=${subject}` : searchString += `?subject=${subject}`};
+    if (place) {searchString ? searchString += `&place=${place}` : searchString += `?place=${place}`};
+    if (person) {searchString ? searchString += `&person=${person}` : searchString += `?person=${person}`};
+    if (publisher) {searchString ? searchString += `&publisher=${publisher}` : searchString += `?publisher=${publisher}`};
+
+    console.log(`https://openlibrary.org/search.json${searchString.split(' ').join('+')}`);
+
+    fetch(`https://openlibrary.org/search.json${searchString.split(' ').join('+')}`)
+      .then(res => res.json())
+      .then(data => {
+        console.log(data.docs[99]);
+      })
+      .catch(err => {
+        console.log(`error ${err}`)
+      });
+    // console.log(`data-search`);
   };
 };
 
