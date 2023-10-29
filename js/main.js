@@ -23,17 +23,16 @@ function getBook(){
     } else { // 9780140328721  -- fantastic mr fox, for testing
       fetch(`https://openlibrary.org/isbn/${isbn}.json`)
         .then(res => res.json())
-        .then(data => {
+        .then(async (data) => {
           results.innerHTML = '';
           console.log(data);
 
           let resCover = `https://covers.openlibrary.org/b/isbn/${isbn}-S.jpg`;
           let resTitle = data.title;
-          let resAuthor;
-          fetch(`https://openlibrary.org${data.authors[0].key}.json`)
+          let resAuthor = await fetch(`https://openlibrary.org${data.authors[0].key}.json`)
             .then(res => res.json())
             .then(data => {
-              resAuthor = data.name;
+              return data.name;
             })
             .catch(err => {
               console.log(`error ${err}`)
