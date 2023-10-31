@@ -55,7 +55,7 @@ function getBook(){
           console.log(`error ${err}`)
         });
     }
-  } else if (event.target.id == 'search-data') {
+  } else if (event.target.id == 'search-data') { // the lord of the rings -- title, for testing
     results.innerHTML = '';
 
     let searchString = '';
@@ -71,7 +71,29 @@ function getBook(){
     fetch(`https://openlibrary.org/search.json${searchString.split(' ').join('+')}`)
       .then(res => res.json())
       .then(data => {
-        console.log(data.docs[99]);
+        console.log(data.docs);
+        console.log(data.docs[0]);
+        console.log(data.docs[data.docs.length-1]);
+        for (let i = 0; i < data.docs.length; i++) {
+          if (!data.docs[i].isbn) continue;
+          if (!data.docs[i].publisher) continue;
+          let resISBN = data.docs[i].isbn.find(el=>`${el}`.length == 13) || data.docs[i].isbn.find(el=>`${el}`.length == 10);
+          let resCover = `https://covers.openlibrary.org/b/isbn/${resISBN}-S.jpg`;
+          let resTitle = data.docs[i].title;
+          let resAuthor = data.docs[i].author_name || 'n/a';
+          let resPublisher = data.docs[i].publisher[0] || 'n/a';
+          let resPubDate = data.docs[i].first_publish_year || 'n/a';
+
+          results.innerHTML += // future me: put character limit on spans, 'Brent Weeks' result has has a book with a fuckton of authors
+            `<div data-isbn="${resISBN}">
+              <button>+</button>
+              <img src="${resCover}" alt="cover">
+              <span>${resTitle}</span>
+              <span>${resAuthor}</span>
+              <span>${resPublisher}</span>
+              <span>${resPubDate}</span>
+            </div>`;
+        }
       })
       .catch(err => {
         console.log(`error ${err}`)

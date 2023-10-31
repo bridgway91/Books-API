@@ -189,6 +189,9 @@ header a {
   justify-self: center;
   align-self: center;
 }
+.container span {
+  padding: 0 1rem;
+}
 
 /**************
 /* Graphic
