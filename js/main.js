@@ -4,6 +4,7 @@ document.querySelector('body').addEventListener('click', toggleBookList);
 document.querySelector('body').addEventListener('click', toggleShowAuthor);
 
 let isbn, title, author, subject, place, person, publisher, results;
+let spanLength = 30;
 
 function getBook(){
   isbn = Number(document.getElementById('isbn').value);
@@ -45,9 +46,9 @@ function getBook(){
             `<div id="result-0">
               <button>+</button>
               <img src="${resCover}" alt="cover">
-              <span>${resTitle}</span>
-              <span>${resAuthor}</span>
-              <span>${resPublisher}</span>
+              <span>${trimString(resTitle,spanLength)}</span>
+              <span>${trimString(resAuthor,spanLength)}</span>
+              <span>${trimString(resPublisher,spanLength)}</span>
               <span>${resPubDate}</span>
             </div>`;
         })
@@ -72,8 +73,8 @@ function getBook(){
       .then(res => res.json())
       .then(data => {
         console.log(data.docs);
-        console.log(data.docs[0]);
-        console.log(data.docs[data.docs.length-1]);
+        console.log(Array.isArray(data.docs[0].author_name));
+        console.log(Array.isArray(data.docs[data.docs.length-1].author_name));
         for (let i = 0; i < data.docs.length; i++) {
           if (!data.docs[i].isbn) continue;
           if (!data.docs[i].publisher) continue;
@@ -88,9 +89,9 @@ function getBook(){
             `<div data-isbn="${resISBN}">
               <button>+</button>
               <img src="${resCover}" alt="cover">
-              <span>${resTitle}</span>
-              <span>${resAuthor}</span>
-              <span>${resPublisher}</span>
+              <span>${trimString(resTitle,spanLength)}</span>
+              <span>${trimString(resAuthor,spanLength)}</span>
+              <span>${trimString(resPublisher,spanLength)}</span>
               <span>${resPubDate}</span>
             </div>`;
         }
@@ -135,4 +136,9 @@ function toggleShowAuthor() {
   } else if (sublist.getAttribute('data-show') == 'false') {
     sublist.setAttribute('data-show', 'true');
   };
+};
+
+function trimString(str, length) {
+  if (Array.isArray(str)) str = str.join(', ');
+  return (str.length > length) ? str.substring(0, length - 3).toLowerCase() + '...' : str.toLowerCase();
 };

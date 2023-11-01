@@ -7,6 +7,7 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  --central-width:60%;
 }
 
 /******************************************
@@ -70,7 +71,7 @@ body {
 }
 
 main {
-  width: 60%;
+  width: var(--central-width);
 }
 
 /**************
@@ -83,7 +84,7 @@ header {
   padding: 2.5rem 0.5rem 0.5rem 0.5rem;
   border-bottom: 5px solid black;
   position: fixed;
-  width: 60%;
+  width: var(--central-width);
   height: 7rem;
   background: white;
 }
@@ -164,7 +165,7 @@ header a {
   border-bottom: 1px solid black;
 }
 .container div {
-  margin-bottom: 0.5rem;
+  margin-bottom: 1rem;
   display: grid;
   grid-template-columns: 5rem 1fr 1fr 1fr 1fr 1fr;
 }
@@ -191,6 +192,7 @@ header a {
 }
 .container span {
   padding: 0 1rem;
+  text-transform: capitalize;
 }
 
 /**************
