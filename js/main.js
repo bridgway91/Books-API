@@ -6,7 +6,7 @@ document.querySelector('body').addEventListener('click', toggleShowAuthor);
 let isbn, title, author, subject, place, person, publisher, results;
 let spanLength = 30;
 
-function getBook(){
+function getBook(){ // future me: search results need to check local storage for each isbn to determine button mode
   isbn = Number(document.getElementById('isbn').value);
   title = document.getElementById('title').value;
   author = document.getElementById('author').value;
@@ -43,7 +43,7 @@ function getBook(){
           let resPubDate = data.publish_date;
 
           results.innerHTML = 
-            `<div id="result-0">
+            `<div data-isbn="${isbn}">
               <button>+</button>
               <img src="${resCover}" alt="cover">
               <span>${trimString(resTitle,spanLength)}</span>
@@ -119,12 +119,25 @@ function getBook(){
 // };
 
 function toggleBookList() {
+  // + > adds data to local storage w/ isbn as key, - > removes data from local storage
+  // both then run helper function to update author list
   if (event.target.tagName != 'BUTTON') return;
   if (event.target.id == 'search-isbn' || event.target.id == 'search-data') return;
   if (event.target.innerText == '+') {
     event.target.innerText = '-';
+    let key = event.target.parentElement.getAttribute('data-isbn');
+    let addedTitle = event.target.nextElementSibling.nextElementSibling;
+    let addedAuthor = addedTitle.nextElementSibling;
+    let addedPublisher = addedAuthor.nextElementSibling;
+    let addedPubDate = addedPublisher.nextElementSibling;
+    let value = `${addedTitle.innerText}---${addedAuthor.innerText}---${addedPublisher.innerText}---${addedPubDate.innerText}`;
+    localStorage.setItem(key, value);
+    updateMyList();
   } else if (event.target.innerText == '-') {
     event.target.innerText = '+';
+    let key = event.target.parentElement.getAttribute('data-isbn');
+    localStorage.removeItem(key);
+    updateMyList();
   };
 };
 
@@ -141,4 +154,33 @@ function toggleShowAuthor() {
 function trimString(str, length) {
   if (Array.isArray(str)) str = str.join(', ');
   return (str.length > length) ? str.substring(0, length - 3).toLowerCase() + '...' : str.toLowerCase();
+};
+
+function updateMyList() {
+  // 1 - clear my list, 2 - grab from LS and populate my list
+  let myList = document.getElementById('my-list-authors');
+  myList.innerHTML = '';
+  
+  // console.log(localStorage);
+  for (let book in localStorage) {
+    if (Number(book)) {
+      let bookISBN = book;
+      let bookData = localStorage.getItem(book).split('---');
+      let bookTitle = bookData[0];
+      let bookAuthor = bookData[1];
+      let bookPublisher = bookData[2];
+      let bookPubDate = bookData[3];
+
+      // myList.innerHTML += 
+      //   `<div>
+      //     <h3>Book Writer #1</h3>
+      //     <ul data-show="true">
+      //       <li>01/01/2000 - Title, Orbit</li>
+      //       <li>01/01/2000 - Title, Orbit</li>
+      //       <li>01/01/2000 - Title, Orbit</li>
+      //       <li>01/01/2000 - Title, Orbit</li>
+      //     </ul>
+      //   </div>`
+    };
+  }
 };
