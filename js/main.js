@@ -158,11 +158,12 @@ function trimString(str, length) {
 
 function updateMyList() {
   // 1 - clear my list, 2 - grab from LS and populate my list
+  // 2.5 - organize LS by author via having separate author array
   let myList = document.getElementById('my-list-authors');
   myList.innerHTML = '';
-  
-  // console.log(localStorage);
-  for (let book in localStorage) {
+
+  let collection = [];
+  for (let book in localStorage) { // builds collection
     if (Number(book)) {
       let bookISBN = book;
       let bookData = localStorage.getItem(book).split('---');
@@ -171,16 +172,45 @@ function updateMyList() {
       let bookPublisher = bookData[2];
       let bookPubDate = bookData[3];
 
-      // myList.innerHTML += 
-      //   `<div>
-      //     <h3>Book Writer #1</h3>
-      //     <ul data-show="true">
-      //       <li>01/01/2000 - Title, Orbit</li>
-      //       <li>01/01/2000 - Title, Orbit</li>
-      //       <li>01/01/2000 - Title, Orbit</li>
-      //       <li>01/01/2000 - Title, Orbit</li>
-      //     </ul>
-      //   </div>`
+      collection.push([bookAuthor,bookPubDate,bookPublisher,bookTitle,bookISBN]);
+      sortMyList(collection);
     };
-  }
+  };
+
+  let listAuthors = [];
+  for (let i=0; i<collection.length; i++) { // builds list in DOM
+    if (listAuthors.includes(collection[i][0])) {
+      let listSingleAuthor = document.getElementById(`${collection[i][0].replace(' ','')}`);
+      let authorBooks = listSingleAuthor.nextElementSibling;
+      authorBooks.innerHTML += `<li data-isbn=${collection[i][4]}>${collection[i][1]} - ${collection[i][3]}, ${collection[i][2]}</li>`;
+    } else {
+      listAuthors.push(collection[i][0]);
+      myList.innerHTML += 
+        `<div>
+          <h3 id=${collection[i][0].replace(' ','')}>${collection[i][0]}</h3>
+          <ul data-show="true">
+            <li data-isbn=${collection[i][4]}>${collection[i][1]} - ${collection[i][3]}, ${collection[i][2]}</li>
+          </ul>
+        </div>`;
+    };
+  };
+  console.log(listAuthors);
+  console.log(collection);
 };
+
+function sortMyList(list) {
+  list.sort((a,b)=>{ // author sort
+    const nameA = a[0].toUpperCase();
+    const nameB = b[0].toUpperCase();
+    if (nameA < nameB) return -1;
+    if (nameA > nameB) return 1;
+    return 0;
+  });
+  list.sort((a,b)=>{ // pub date sort
+    const nameA = a[0].toUpperCase();
+    const nameB = b[0].toUpperCase();
+    if (nameA != nameB) return 0;
+    return a[1] - b[1];
+  });
+  return list;
+}
