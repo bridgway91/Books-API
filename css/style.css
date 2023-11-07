@@ -160,7 +160,8 @@ header a {
 /**************/
 
 .container {
-  height: minmax(40dvh, 80dvh);
+  height: minmax(40dvh, 90dvh);
+  max-height: 90dvh;
   overflow: auto;
   border-bottom: 1px solid black;
 }
@@ -189,10 +190,22 @@ header a {
   width: 2rem;
   justify-self: center;
   align-self: center;
+  border: none;
+  background-color: white;
 }
 .container span {
   padding: 0 1rem;
   text-transform: capitalize;
+}
+i {
+  font-size: 2rem;
+  pointer-events: none;
+}
+i.fa-square-plus {
+  color: green;
+}
+i.fa-square-minus {
+  color: red;
 }
 
 /**************

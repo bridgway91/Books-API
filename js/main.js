@@ -26,9 +26,18 @@ function getBook(){ // future me: search results need to check local storage for
         .then(res => res.json())
         .then(async (data) => {
           results.innerHTML = '';
-          console.log(data);
-
-          let resCover = `https://covers.openlibrary.org/b/isbn/${isbn}-S.jpg`;
+          // console.log(data);
+          // https://covers.openlibrary.org/b/isbn/9780316033671-S.jpg -- working cover result (for testing)
+          // https://covers.openlibrary.org/b/isbn/9781841499093-S.jpg -- no cover result (for testing)
+          // fetch -> res.redirected returns false when no cover found
+          // let resCover = `https://covers.openlibrary.org/b/isbn/${isbn}-S.jpg`;
+          let resCover = await fetch(`https://covers.openlibrary.org/b/isbn/${isbn}-S.jpg`)
+            .then(res => {
+              if (res.redirected != true) {
+                return "img\not_found.jpg";
+              };
+              return `https://covers.openlibrary.org/b/isbn/${isbn}-S.jpg`;
+            });
           let resTitle = data.title;
           let resAuthor = await fetch(`https://openlibrary.org${data.authors[0].key}.json`)
             .then(res => res.json())
@@ -44,7 +53,7 @@ function getBook(){ // future me: search results need to check local storage for
 
           results.innerHTML = 
             `<div data-isbn="${isbn}">
-              <button>+</button>
+              <button><i class="fa-regular fa-square-plus"></i></button>
               <img src="${resCover}" alt="cover">
               <span>${trimString(resTitle,spanLength)}</span>
               <span>${trimString(resAuthor,spanLength)}</span>
@@ -71,23 +80,28 @@ function getBook(){ // future me: search results need to check local storage for
 
     fetch(`https://openlibrary.org/search.json${searchString.split(' ').join('+')}`)
       .then(res => res.json())
-      .then(data => {
-        console.log(data.docs);
-        console.log(Array.isArray(data.docs[0].author_name));
-        console.log(Array.isArray(data.docs[data.docs.length-1].author_name));
+      .then(async (data) => {
+        // console.log(data.docs);
+        // console.log(Array.isArray(data.docs[0].author_name));
+        // console.log(Array.isArray(data.docs[data.docs.length-1].author_name));
         for (let i = 0; i < data.docs.length; i++) {
           if (!data.docs[i].isbn) continue;
           if (!data.docs[i].publisher) continue;
           let resISBN = data.docs[i].isbn.find(el=>`${el}`.length == 13) || data.docs[i].isbn.find(el=>`${el}`.length == 10);
-          let resCover = `https://covers.openlibrary.org/b/isbn/${resISBN}-S.jpg`;
+          let resCover = await fetch(`https://covers.openlibrary.org/b/isbn/${resISBN}-S.jpg`)
+            .then(res => {
+              if (res.redirected != true) {
+                return "img\\not_found.jpg";
+              };
+              return `https://covers.openlibrary.org/b/isbn/${resISBN}-S.jpg`;
+            });
           let resTitle = data.docs[i].title;
           let resAuthor = data.docs[i].author_name || 'n/a';
           let resPublisher = data.docs[i].publisher[0] || 'n/a';
           let resPubDate = data.docs[i].first_publish_year || 'n/a';
-
-          results.innerHTML += // future me: put character limit on spans, 'Brent Weeks' result has has a book with a fuckton of authors
+          results.innerHTML +=
             `<div data-isbn="${resISBN}">
-              <button>+</button>
+              <button><i class="fa-regular fa-square-plus"></i></button>
               <img src="${resCover}" alt="cover">
               <span>${trimString(resTitle,spanLength)}</span>
               <span>${trimString(resAuthor,spanLength)}</span>
@@ -123,8 +137,8 @@ function toggleBookList() {
   // both then run helper function to update author list
   if (event.target.tagName != 'BUTTON') return;
   if (event.target.id == 'search-isbn' || event.target.id == 'search-data') return;
-  if (event.target.innerText == '+') {
-    event.target.innerText = '-';
+  if (event.target.innerHTML == '<i class="fa-regular fa-square-plus"></i>') {
+    event.target.innerHTML = '<i class="fa-regular fa-square-minus"></i>';
     let key = event.target.parentElement.getAttribute('data-isbn');
     let addedTitle = event.target.nextElementSibling.nextElementSibling;
     let addedAuthor = addedTitle.nextElementSibling;
@@ -133,8 +147,8 @@ function toggleBookList() {
     let value = `${addedTitle.innerText}---${addedAuthor.innerText}---${addedPublisher.innerText}---${addedPubDate.innerText}`;
     localStorage.setItem(key, value);
     updateMyList();
-  } else if (event.target.innerText == '-') {
-    event.target.innerText = '+';
+  } else if (event.target.innerHTML == '<i class="fa-regular fa-square-minus"></i>') {
+    event.target.innerHTML = '<i class="fa-regular fa-square-plus"></i>';
     let key = event.target.parentElement.getAttribute('data-isbn');
     localStorage.removeItem(key);
     updateMyList();
