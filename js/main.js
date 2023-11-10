@@ -1,12 +1,21 @@
+updateMyList();
+
+
 document.getElementById('search-isbn').addEventListener('click', getBook);
 document.getElementById('search-data').addEventListener('click', getBook);
 document.querySelector('body').addEventListener('click', toggleBookList);
 document.querySelector('body').addEventListener('click', toggleShowAuthor);
+document.getElementById('title').addEventListener('input', checkInputs);
+document.getElementById('author').addEventListener('input', checkInputs);
+document.getElementById('subject').addEventListener('input', checkInputs);
+document.getElementById('place').addEventListener('input', checkInputs);
+document.getElementById('person').addEventListener('input', checkInputs);
+document.getElementById('publisher').addEventListener('input', checkInputs);
 
 let isbn, title, author, subject, place, person, publisher, results;
 let spanLength = 30;
 
-function getBook(){ // future me: search results need to check local storage for each isbn to determine button mode
+function getBook(){
   isbn = Number(document.getElementById('isbn').value);
   title = document.getElementById('title').value;
   author = document.getElementById('author').value;
@@ -53,7 +62,7 @@ function getBook(){ // future me: search results need to check local storage for
 
           results.innerHTML = 
             `<div data-isbn="${isbn}">
-              <button><i class="fa-regular fa-square-plus"></i></button>
+              <button>${checkList(isbn)}</button>
               <img src="${resCover}" alt="cover">
               <span>${trimString(resTitle,spanLength)}</span>
               <span>${trimString(resAuthor,spanLength)}</span>
@@ -101,7 +110,7 @@ function getBook(){ // future me: search results need to check local storage for
           let resPubDate = data.docs[i].first_publish_year || 'n/a';
           results.innerHTML +=
             `<div data-isbn="${resISBN}">
-              <button><i class="fa-regular fa-square-plus"></i></button>
+              <button>${checkList(resISBN)}</button>
               <img src="${resCover}" alt="cover">
               <span>${trimString(resTitle,spanLength)}</span>
               <span>${trimString(resAuthor,spanLength)}</span>
@@ -208,8 +217,6 @@ function updateMyList() {
         </div>`;
     };
   };
-  console.log(listAuthors);
-  console.log(collection);
 };
 
 function sortMyList(list) {
@@ -227,4 +234,26 @@ function sortMyList(list) {
     return a[1] - b[1];
   });
   return list;
+}
+
+function checkInputs() {
+  if(document.getElementById('title').value.trim() === '' &&
+      document.getElementById('author').value.trim() === '' &&
+      document.getElementById('subject').value.trim() === '' &&
+      document.getElementById('place').value.trim() === '' &&
+      document.getElementById('person').value.trim() === '' &&
+      document.getElementById('publisher').value.trim() === '') {
+    document.getElementById('search-data').setAttribute("disabled","disabled");
+  } else {
+    document.getElementById('search-data').removeAttribute("disabled");  
+  }
+}
+
+function checkList(isbn) {
+  const keys = Object.keys(localStorage);
+  if (keys.includes(isbn)) {
+    return '<i class="fa-regular fa-square-minus"></i>';
+  } else {
+    return '<i class="fa-regular fa-square-plus"></i>';
+  }
 }
