@@ -106,10 +106,32 @@ header li {
   border-radius: 0.5rem;
   background: black;
   margin-left: 0.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
 }
 header a {
   color: white;
   text-decoration: none;
+}
+header button {
+  background-color: black;
+  border: 1px solid black;
+  border-radius: 0.5rem;
+  padding: 0.25rem;
+  height: 2.5rem;
+  width: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+svg {
+  fill: white;
+  width: 1.5rem;
+  height: 1.5rem;
+  padding-top: 0rem;
+  margin: 0;
+  pointer-events: none;
 }
 
 /**************
@@ -285,7 +307,64 @@ i.fa-square-minus {
 }
 .my-list ul {
   margin-left: 2rem;
+  list-style-type: none;
 }
 .my-list ul[data-show="false"] {
   display: none;
+}
+.my-list span {
+  font-size: 1.1rem;
+  font-family: 'Bebas Neue', sans-serif;
+}
+.my-list strong {
+  font-size: 1.1rem;
+}
+
+/**************
+/* Dark Mode
+/**************/
+
+body.dark {
+  background: black;
+  color: white;
+}
+body.dark header {
+  border-bottom: 5px solid white;
+  background: gray;
+}
+body.dark header li,
+body.dark header button {
+  border: 1px solid white;
+  background: white;
+}
+body.dark header a {
+  color: black;
+}
+body.dark svg {
+  fill: black;
+}
+body.dark .search-isbn,
+body.dark .search-data {
+  border: 2px solid white;
+}
+body.dark .container {
+  border-bottom: 1px solid white;
+}
+#results-head {
+  background: white;
+  color: black;
+}
+body.dark .container button {
+  background-color: black;
+}
+body.dark .book {
+  border: 1px solid white;
+}
+body.dark .my-list h2 {
+  border-bottom: 1px solid black;
+}
+body.dark .my-list h3 {
+  background-color: white;
+  color: black;
+  /* box-shadow: grey 2px 2px; */
 }
