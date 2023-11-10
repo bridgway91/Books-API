@@ -34,7 +34,7 @@ function getBook(){ // future me: search results need to check local storage for
           let resCover = await fetch(`https://covers.openlibrary.org/b/isbn/${isbn}-S.jpg`)
             .then(res => {
               if (res.redirected != true) {
-                return "img\not_found.jpg";
+                return "img\\not_found.jpg";
               };
               return `https://covers.openlibrary.org/b/isbn/${isbn}-S.jpg`;
             });
