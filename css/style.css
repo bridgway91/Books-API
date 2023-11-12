@@ -304,6 +304,16 @@ i.fa-square-minus {
   border-bottom-right-radius: 1.5rem;
   cursor: pointer;
   margin-bottom: 0.5rem;
+  display: flex;
+  justify-content: space-between;
+}
+.my-list button {
+  font-size: 1rem;
+  margin-right: 1.5rem;
+  padding: 0 0.5rem;
+  background-color: blue;
+  color: white;
+  font-family:'Times New Roman', Times, serif;
 }
 .my-list ul {
   margin-left: 2rem;
@@ -350,7 +360,7 @@ body.dark .search-data {
 body.dark .container {
   border-bottom: 1px solid white;
 }
-#results-head {
+body.dark #results-head {
   background: white;
   color: black;
 }

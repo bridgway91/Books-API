@@ -5,6 +5,7 @@ document.getElementById('search-isbn').addEventListener('click', getBook);
 document.getElementById('search-data').addEventListener('click', getBook);
 document.querySelector('body').addEventListener('click', toggleBookList);
 document.querySelector('body').addEventListener('click', toggleShowAuthor);
+document.querySelector('body').addEventListener('click', authorCompare);
 document.getElementById('title').addEventListener('input', checkInputs);
 document.getElementById('author').addEventListener('input', checkInputs);
 document.getElementById('subject').addEventListener('input', checkInputs);
@@ -36,11 +37,6 @@ function getBook(){
         .then(res => res.json())
         .then(async (data) => {
           results.innerHTML = '';
-          // console.log(data);
-          // https://covers.openlibrary.org/b/isbn/9780316033671-S.jpg -- working cover result (for testing)
-          // https://covers.openlibrary.org/b/isbn/9781841499093-S.jpg -- no cover result (for testing)
-          // fetch -> res.redirected returns false when no cover found
-          // let resCover = `https://covers.openlibrary.org/b/isbn/${isbn}-S.jpg`;
           let resCover = await fetch(`https://covers.openlibrary.org/b/isbn/${isbn}-S.jpg`)
             .then(res => {
               if (res.redirected != true) {
@@ -91,9 +87,9 @@ function getBook(){
     fetch(`https://openlibrary.org/search.json${searchString.split(' ').join('+')}`)
       .then(res => res.json())
       .then(async (data) => {
-        // console.log(data.docs);
-        // console.log(Array.isArray(data.docs[0].author_name));
-        // console.log(Array.isArray(data.docs[data.docs.length-1].author_name));
+        console.log(data.docs);
+        console.log(data.docs[0]);
+        console.log(data.docs[data.docs.length-1].author_name);
         for (let i = 0; i < data.docs.length; i++) {
           if (!data.docs[i].isbn) continue;
           if (!data.docs[i].publisher) continue;
@@ -107,10 +103,11 @@ function getBook(){
             });
           let resTitle = data.docs[i].title;
           let resAuthor = data.docs[i].author_name || 'n/a';
+          let resKeys = data.docs[i].author_key || 'n/a';
           let resPublisher = data.docs[i].publisher[0] || 'n/a';
           let resPubDate = data.docs[i].first_publish_year || 'n/a';
           results.innerHTML +=
-            `<div data-isbn="${resISBN}">
+            `<div data-isbn="${resISBN}" data-authorkeys=${resKeys}>
               <button>${checkList(resISBN)}</button>
               <img src="${resCover}" alt="cover">
               <span>${trimString(resTitle,spanLength)}</span>
@@ -211,7 +208,7 @@ function updateMyList() {
       listAuthors.push(collection[i][0]);
       myList.innerHTML += 
         `<div>
-          <h3 id=${collection[i][0].replace(' ','')}>${collection[i][0]}</h3>
+          <h3 id=${collection[i][0].replace(' ','')}>${collection[i][0]}<button class="compare">Compare</button></h3>
           <ul data-show="true">
             <li data-isbn=${collection[i][4]}><span>${collection[i][1]}</span> -- <strong>${collection[i][3]}  :</strong>  ${collection[i][2]}</li>
           </ul>
@@ -281,4 +278,10 @@ function setLighting() {
     document.getElementById('lightToggle').innerHTML = 
     '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3.55 19.09L4.96 20.5L6.76 18.71L5.34 17.29M12 6C8.69 6 6 8.69 6 12S8.69 18 12 18 18 15.31 18 12C18 8.68 15.31 6 12 6M20 13H23V11H20M17.24 18.71L19.04 20.5L20.45 19.09L18.66 17.29M20.45 5L19.04 3.6L17.24 5.39L18.66 6.81M13 1H11V4H13M6.76 5.39L4.96 3.6L3.55 5L5.34 6.81L6.76 5.39M1 13H4V11H1M13 20H11V23H13" /></svg>'
   };
+}
+
+function authorCompare() {
+  if (event.target.tagName != 'BUTTON') return;
+  if (!Array.from(event.target.classList).includes('compare')) return;
+  console.log(event.target.parentElement.id);
 }
