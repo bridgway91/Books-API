@@ -330,6 +330,57 @@ i.fa-square-minus {
   font-size: 1.1rem;
 }
 
+/*******************
+/* Author Compare
+/*******************/
+
+.modal {
+  border: 1px solid black;
+  border-radius: 1rem;
+  padding: 1.5rem;
+}
+.modal-header {
+  height: minmax(30dvh, 50dvh);
+  border-bottom: 1px solid black;
+  display: flex;
+}
+.modal-header-left {
+  border-right: 1px solid black;
+  flex: 1 1 30%;
+}
+.modal-header-left h2 {
+  padding-top: 0;
+  margin-top: 1rem;
+}
+.modal-header-left .photo {
+  height: 12rem;
+}
+.modal-header-right {
+  position: relative;
+  flex: 1 1 70%;
+  padding-top: 5dvh;
+  overflow: auto;
+}
+.modal-header-right button {
+  position: absolute;
+  right: 0;
+  top: 0;
+  margin: 0;
+  border: none;
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: black;
+  background-color: floralwhite;
+}
+.modal-header-right p {
+  padding: 0.5rem;
+}
+.modal-header-right a {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+}
+
 /**************
 /* Dark Mode
 /**************/

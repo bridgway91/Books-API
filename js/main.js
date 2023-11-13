@@ -17,7 +17,7 @@ document.getElementById('lightToggle').addEventListener('click', lightToggle);
 let isbn, title, author, subject, place, person, publisher, results;
 let spanLength = 30;
 
-function getBook(){
+function getBook(){ // takes search parameters and does a general search on Open Library API, returning results and populating the search section below
   isbn = Number(document.getElementById('isbn').value);
   title = document.getElementById('title').value;
   author = document.getElementById('author').value;
@@ -53,12 +53,12 @@ function getBook(){
             .catch(err => {
               console.log(`error ${err}`)
             });
-
+          let resKeys = data.authors[0].key.split('/')[2];
           let resPublisher = data.publishers[0];
           let resPubDate = data.publish_date;
 
           results.innerHTML = 
-            `<div data-isbn="${isbn}">
+            `<div data-isbn="${isbn}" data-authorkeys=${resKeys}>
               <button>${checkList(isbn)}</button>
               <img src="${resCover}" alt="cover">
               <span>${trimString(resTitle,spanLength)}</span>
@@ -87,9 +87,9 @@ function getBook(){
     fetch(`https://openlibrary.org/search.json${searchString.split(' ').join('+')}`)
       .then(res => res.json())
       .then(async (data) => {
-        console.log(data.docs);
-        console.log(data.docs[0]);
-        console.log(data.docs[data.docs.length-1].author_name);
+        // console.log(data.docs);
+        // console.log(data.docs[0].author_key);
+        // console.log(data.docs[data.docs.length-1].author_name);
         for (let i = 0; i < data.docs.length; i++) {
           if (!data.docs[i].isbn) continue;
           if (!data.docs[i].publisher) continue;
@@ -124,34 +124,18 @@ function getBook(){
   };
 };
 
-// function fetchAuthor(key) {
-//   let authorName = '';
-//   fetch(`https://openlibrary.org${key}.json`)
-//     .then(res => res.json())
-//     .then(data => {
-//       authorName = data.name;
-//       console.log(authorName);
-//       return authorName;
-//     })
-//     .catch(err => {
-//       console.log(`error ${err}`)
-//     });
-//   // return authorName;
-// };
-
-function toggleBookList() {
-  // + > adds data to local storage w/ isbn as key, - > removes data from local storage
-  // both then run helper function to update author list
+function toggleBookList() { // adds or removes individual search result to local storage with ISBN as key and remaining data as a combined string; then runs helper function updateMyList()
   if (event.target.tagName != 'BUTTON') return;
   if (event.target.id == 'search-isbn' || event.target.id == 'search-data') return;
   if (event.target.innerHTML == '<i class="fa-regular fa-square-plus"></i>') {
     event.target.innerHTML = '<i class="fa-regular fa-square-minus"></i>';
     let key = event.target.parentElement.getAttribute('data-isbn');
+    let authorKeys = event.target.parentElement.getAttribute('data-authorkeys');
     let addedTitle = event.target.nextElementSibling.nextElementSibling;
     let addedAuthor = addedTitle.nextElementSibling;
     let addedPublisher = addedAuthor.nextElementSibling;
     let addedPubDate = addedPublisher.nextElementSibling;
-    let value = `${addedTitle.innerText}---${addedAuthor.innerText}---${addedPublisher.innerText}---${addedPubDate.innerText}`;
+    let value = `${addedTitle.innerText}---${addedAuthor.innerText}---${addedPublisher.innerText}---${addedPubDate.innerText}---${authorKeys}`;
     localStorage.setItem(key, value);
     updateMyList();
   } else if (event.target.innerHTML == '<i class="fa-regular fa-square-minus"></i>') {
@@ -162,7 +146,7 @@ function toggleBookList() {
   };
 };
 
-function toggleShowAuthor() {
+function toggleShowAuthor() { // collapses or expands My List authors
   if (event.target.tagName != 'H3') return;
   let sublist = event.target.nextElementSibling;
   if (sublist.getAttribute('data-show') == 'true') {
@@ -172,14 +156,12 @@ function toggleShowAuthor() {
   };
 };
 
-function trimString(str, length) {
+function trimString(str, length) { // helper function to limit string length in search results section
   if (Array.isArray(str)) str = str.join(', ');
   return (str.length > length) ? str.substring(0, length - 3).toLowerCase() + '...' : str.toLowerCase();
 };
 
-function updateMyList() {
-  // 1 - clear my list, 2 - grab from LS and populate my list
-  // 2.5 - organize LS by author via having separate author array
+function updateMyList() { // clears existing list in DOM, then grabs data from local storage to populate my list, first by building a collection of an array of arrays, then builds My List according to authors and sorted using sortMyList()
   let myList = document.getElementById('my-list-authors');
   myList.innerHTML = '';
 
@@ -192,23 +174,23 @@ function updateMyList() {
       let bookAuthor = bookData[1];
       let bookPublisher = bookData[2];
       let bookPubDate = bookData[3];
+      let bookAuthorKeys = bookData[4];
 
-      collection.push([bookAuthor,bookPubDate,bookPublisher,bookTitle,bookISBN]);
+      collection.push([bookAuthor,bookPubDate,bookPublisher,bookTitle,bookISBN,bookAuthorKeys]);
       sortMyList(collection);
     };
   };
-
   let listAuthors = [];
   for (let i=0; i<collection.length; i++) { // builds list in DOM
-    if (listAuthors.includes(collection[i][0])) {
+    if (listAuthors.includes(collection[i][0])) { // if author already exists in DOM list
       let listSingleAuthor = document.getElementById(`${collection[i][0].replace(' ','')}`);
       let authorBooks = listSingleAuthor.nextElementSibling;
       authorBooks.innerHTML += `<li data-isbn=${collection[i][4]}><span>${collection[i][1]}</span> -- <strong>${collection[i][3]}  :</strong>  ${collection[i][2]}</li>`;
-    } else {
+    } else { // if author does not yet exist in DOM list
       listAuthors.push(collection[i][0]);
       myList.innerHTML += 
         `<div>
-          <h3 id=${collection[i][0].replace(' ','')}>${collection[i][0]}<button class="compare">Compare</button></h3>
+          <h3 id=${collection[i][0].replaceAll(' ','')}>${collection[i][0]}<button class="compare" data-authorKeys=${collection[i][5]}>Compare</button></h3>
           <ul data-show="true">
             <li data-isbn=${collection[i][4]}><span>${collection[i][1]}</span> -- <strong>${collection[i][3]}  :</strong>  ${collection[i][2]}</li>
           </ul>
@@ -217,7 +199,7 @@ function updateMyList() {
   };
 };
 
-function sortMyList(list) {
+function sortMyList(list) { // helper function to sort collection first by author, then by publish date
   list.sort((a,b)=>{ // author sort
     const nameA = a[0].toUpperCase();
     const nameB = b[0].toUpperCase();
@@ -232,9 +214,9 @@ function sortMyList(list) {
     return a[1] - b[1];
   });
   return list;
-}
+};
 
-function checkInputs() {
+function checkInputs() { // disables general search button when nothing is written
   if(document.getElementById('title').value.trim() === '' &&
       document.getElementById('author').value.trim() === '' &&
       document.getElementById('subject').value.trim() === '' &&
@@ -245,19 +227,18 @@ function checkInputs() {
   } else {
     document.getElementById('search-data').removeAttribute("disabled");  
   }
-}
+};
 
-function checkList(isbn) {
+function checkList(isbn) { // helper function to determine if a result is already in local storage when populating search results
   const keys = Object.keys(localStorage);
   if (keys.includes(isbn)) {
     return '<i class="fa-regular fa-square-minus"></i>';
   } else {
     return '<i class="fa-regular fa-square-plus"></i>';
   }
-}
+};
 
-function lightToggle() {
-  console.log('let there be light (or dark)')
+function lightToggle() { // toggles lighting mode within local storage, then runs setLighting()
   let lighting = localStorage.getItem('lighting');
   if (lighting === 'dark') {
     localStorage.setItem('lighting', 'light');
@@ -265,9 +246,9 @@ function lightToggle() {
     localStorage.setItem('lighting', 'dark');
   };
   setLighting();
-}
+};
 
-function setLighting() {
+function setLighting() { // actually changes lighting mode on site, plus changing icon on button
   let lighting = localStorage.getItem('lighting');
   if (lighting === 'dark') {
     document.body.classList.add('dark');
@@ -278,10 +259,50 @@ function setLighting() {
     document.getElementById('lightToggle').innerHTML = 
     '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3.55 19.09L4.96 20.5L6.76 18.71L5.34 17.29M12 6C8.69 6 6 8.69 6 12S8.69 18 12 18 18 15.31 18 12C18 8.68 15.31 6 12 6M20 13H23V11H20M17.24 18.71L19.04 20.5L20.45 19.09L18.66 17.29M20.45 5L19.04 3.6L17.24 5.39L18.66 6.81M13 1H11V4H13M6.76 5.39L4.96 3.6L3.55 5L5.34 6.81L6.76 5.39M1 13H4V11H1M13 20H11V23H13" /></svg>'
   };
-}
+};
 
 function authorCompare() {
   if (event.target.tagName != 'BUTTON') return;
   if (!Array.from(event.target.classList).includes('compare')) return;
-  console.log(event.target.parentElement.id);
-}
+  
+  const comparedKeys = event.target.dataset.authorkeys.split(',');
+  const comparedAuthors = event.target.parentElement.innerText.split('\n')[0];
+  // author photo -- `https://covers.openlibrary.org/a/olid/${comparedKeys[i]}-M.jpg`
+
+  const modalCompare = document.querySelector('#modal-compare');
+  const compareLeft = modalCompare.querySelector('.modal-header-left');
+  const compareRight = modalCompare.querySelector('.modal-header-right');
+
+  if (comparedKeys.length == 1) { // one author to compare
+    fetch(`https://openlibrary.org/authors/${comparedKeys[0]}.json`)
+      .then(res => res.json())
+      .then(async (data) => {
+        const foundName = data.name || 'Not Found';
+        const foundBirthdate = data.birthdate || 'Not Found';
+        const foundBio = data.bio || 'Not Found';
+        const foundPhoto = await fetch(`https://covers.openlibrary.org/a/olid/${comparedKeys[0]}-M.jpg`)
+          .then(res => {
+            if (res.redirected != true) {
+              return `https://covers.openlibrary.org/a/olid/OL6791840A-M.jpg`;
+            } else {
+              return 'img\\not_found.jpg';
+            };
+          });
+        const foundWiki = data.wikipedia || `https://en.wikipedia.org/wiki/${foundName.replaceAll(' ','_')}`;
+
+        compareLeft.innerHTML = 
+          `<h2>${foundName}</h2>
+          <img class="photo" src=${foundPhoto}>`;
+        compareRight.innerHTML = 
+          `<button>&times;</button>
+          <p><span>Birth Date: </span>${foundBirthdate}</p>
+          <p><span>Bio: </span>${foundBio}</p>
+          <a>${foundWiki}</a>`;
+      })
+      .catch(err => {
+        console.log(`error ${err}`)
+      });
+  } else if (comparedKeys.length > 1) { // multiple authors to compare
+    // need second modal to pick author to compare with from possible selection
+  };
+};
