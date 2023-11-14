@@ -265,44 +265,76 @@ function authorCompare() {
   if (event.target.tagName != 'BUTTON') return;
   if (!Array.from(event.target.classList).includes('compare')) return;
   
+  const readISBNs = Object.keys(localStorage);
   const comparedKeys = event.target.dataset.authorkeys.split(',');
-  const comparedAuthors = event.target.parentElement.innerText.split('\n')[0];
+  const comparedAuthors = event.target.parentElement.innerText.split('\n')[0]; // dont think i need, but keeping for now
   // author photo -- `https://covers.openlibrary.org/a/olid/${comparedKeys[i]}-M.jpg`
 
   const modalCompare = document.querySelector('#modal-compare');
   const compareLeft = modalCompare.querySelector('.modal-header-left');
   const compareRight = modalCompare.querySelector('.modal-header-right');
+  const compareWorks = modalCompare.querySelector('.modal-works');
 
   if (comparedKeys.length == 1) { // one author to compare
-    fetch(`https://openlibrary.org/authors/${comparedKeys[0]}.json`)
-      .then(res => res.json())
-      .then(async (data) => {
-        const foundName = data.name || 'Not Found';
-        const foundBirthdate = data.birthdate || 'Not Found';
-        const foundBio = data.bio || 'Not Found';
-        const foundPhoto = await fetch(`https://covers.openlibrary.org/a/olid/${comparedKeys[0]}-M.jpg`)
-          .then(res => {
-            if (res.redirected != true) {
-              return `https://covers.openlibrary.org/a/olid/OL6791840A-M.jpg`;
-            } else {
-              return 'img\\not_found.jpg';
-            };
-          });
-        const foundWiki = data.wikipedia || `https://en.wikipedia.org/wiki/${foundName.replaceAll(' ','_')}`;
+    getAuthorBio(comparedKeys, compareLeft, compareRight);
 
-        compareLeft.innerHTML = 
-          `<h2>${foundName}</h2>
-          <img class="photo" src=${foundPhoto}>`;
-        compareRight.innerHTML = 
-          `<button>&times;</button>
-          <p><span>Birth Date: </span>${foundBirthdate}</p>
-          <p><span>Bio: </span>${foundBio}</p>
-          <a>${foundWiki}</a>`;
+    // getAuthorWorks()
+
+    const compareTable = compareWorks.getAttribute('#modal-table-body');
+
+    fetch(`https://openlibrary.org/authors/${comparedKeys[0]}/works.json?limit=1000`)
+      .then(res => res.json())
+      .then(async(data) => {
+        const authorWorks = data.entries;
+        console.log(authorWorks);
+        for (let i=0; i<10; i++) { // i<authorWorks.length
+          // let workTitle = authorWorks[i].title;
+          await fetch(`https://openlibrary.org${authorWorks[i].key}/editions.json?limit=1000`)
+            .then(res => res.json())
+            .then(data => {
+              const bookEditions = data.entries;
+              
+              console.log(data);
+            })
+        }
       })
-      .catch(err => {
-        console.log(`error ${err}`)
-      });
+
   } else if (comparedKeys.length > 1) { // multiple authors to compare
     // need second modal to pick author to compare with from possible selection
   };
 };
+
+function getAuthorBio(comparedKeys, compareLeft, compareRight) {
+  fetch(`https://openlibrary.org/authors/${comparedKeys[0]}.json`)
+    .then(res => res.json())
+    .then(async (data) => {
+      const foundName = data.name || 'Not Found';
+      const foundBirthdate = data.birthdate || 'Not Found';
+      const foundBio = data.bio || 'Not Found';
+      const foundPhoto = await fetch(`https://covers.openlibrary.org/a/olid/${comparedKeys[0]}-M.jpg`)
+        .then(res => {
+          if (res.redirected != true) {
+            return `https://covers.openlibrary.org/a/olid/OL6791840A-M.jpg`;
+          } else {
+            return 'img\\not_found.jpg';
+          };
+        });
+      const foundWiki = data.wikipedia || `https://en.wikipedia.org/wiki/${foundName.replaceAll(' ','_')}`;
+
+      compareLeft.innerHTML = 
+        `<h2>${foundName}</h2>
+        <img class="photo" src=${foundPhoto}>`;
+      compareRight.innerHTML = 
+        `<button>&times;</button>
+        <p><span>Birth Date: </span>${foundBirthdate}</p>
+        <p><span>Bio: </span>${foundBio}</p>
+        <a href="${foundWiki}" target=_blank>${foundWiki}</a>`;
+    })
+    .catch(err => {
+      console.log(`error ${err}`)
+    });
+}
+
+function getAuthorWorks() {
+
+}

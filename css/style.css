@@ -380,6 +380,16 @@ i.fa-square-minus {
   right: 0;
   bottom: 0;
 }
+.modal-works svg {
+  height: 1rem;
+  width: 1rem;
+}
+.modal-works .have_read svg {
+  fill: green;
+}
+.modal-works .have_not_read svg {
+  fill: red;
+}
 
 /**************
 /* Dark Mode
