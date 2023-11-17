@@ -270,34 +270,15 @@ function authorCompare() {
   const comparedAuthors = event.target.parentElement.innerText.split('\n')[0]; // dont think i need, but keeping for now
   // author photo -- `https://covers.openlibrary.org/a/olid/${comparedKeys[i]}-M.jpg`
 
-  const modalCompare = document.querySelector('#modal-compare');
-  const compareLeft = modalCompare.querySelector('.modal-header-left');
-  const compareRight = modalCompare.querySelector('.modal-header-right');
-  const compareWorks = modalCompare.querySelector('.modal-works');
+  let modalCompare = document.querySelector('#modal-compare');
+  let compareLeft = modalCompare.querySelector('.modal-header-left');
+  let compareRight = modalCompare.querySelector('.modal-header-right');
+  let compareWorks = modalCompare.querySelector('.modal-works');
 
   if (comparedKeys.length == 1) { // one author to compare
     getAuthorBio(comparedKeys, compareLeft, compareRight);
 
-    // getAuthorWorks()
-
-    const compareTable = compareWorks.getAttribute('#modal-table-body');
-
-    fetch(`https://openlibrary.org/authors/${comparedKeys[0]}/works.json?limit=1000`)
-      .then(res => res.json())
-      .then(async(data) => {
-        const authorWorks = data.entries;
-        console.log(authorWorks);
-        for (let i=0; i<10; i++) { // i<authorWorks.length
-          // let workTitle = authorWorks[i].title;
-          await fetch(`https://openlibrary.org${authorWorks[i].key}/editions.json?limit=1000`)
-            .then(res => res.json())
-            .then(data => {
-              const bookEditions = data.entries;
-              
-              console.log(data);
-            })
-        }
-      })
+    getAuthorWorks(readISBNs, comparedKeys, compareWorks);
 
   } else if (comparedKeys.length > 1) { // multiple authors to compare
     // need second modal to pick author to compare with from possible selection
@@ -333,8 +314,62 @@ function getAuthorBio(comparedKeys, compareLeft, compareRight) {
     .catch(err => {
       console.log(`error ${err}`)
     });
-}
+};
 
-function getAuthorWorks() {
+function getAuthorWorks(readISBNs, comparedKeys, compareWorks) {
+  let compareTable = compareWorks.querySelector('#modal-table-body');
 
-}
+  fetch(`https://openlibrary.org/authors/${comparedKeys[0]}/works.json?limit=1000`)
+    .then(res => res.json())
+    .then(async(data) => {
+      const authorWorks = data.entries;
+      let worksArray = [];
+      console.log(authorWorks);
+      for (let i=0; i<10; i++) { // i<authorWorks.length  // for each i work, run fetch to get editions
+        await fetch(`https://openlibrary.org${authorWorks[i].key}/editions.json?limit=1000`)
+          .then(res => res.json())
+          .then(data => {
+            const authorWorksEditions = data.entries;
+            for (let j=0; j<authorWorksEditions.length; j++) { // for each j edition (of a specific i work)
+              let edition = authorWorksEditions[j];
+
+              let readStatus = false; // depending on how i handle building table, dont need 3 status'
+              let ignoreStatus = false;
+              let addStatus = false;
+              let editionYear = edition.publish_date.length > 4 ? edition.publish_date.slice(-4) : edition.publish_date;
+              let editionTitle = edition.title;
+              let editionISBN = edition.isbn_13[0] || edition.isbn_10[0];
+
+              worksArray.push([readStatus,ignoreStatus,addStatus,editionYear,editionTitle,editionISBN]);
+            }
+            
+            console.log(data);
+          })
+      };
+      buildCompareTable(compareTable, worksArray, readISBNs);
+      console.log(worksArray);
+    })
+};
+
+function buildCompareTable(compareTable, worksArray, readISBNs) {
+  // 1- add all works to compare table
+  // 2a- run through works to see if ISBN on each matches with an ISBN in local storage
+  // 2b- change 'read' to true and add title to hidden array
+  // 3a- run through works to see if title matches with any in hidden array
+  // 3b- change 'ignore' to true
+  compareTable.innerHTML = '';
+
+  for (let i=0; i<worksArray.length; i++) {
+    compareTable.innerHTML +=
+      `<tr>
+        <td class="read_status" data-read="false"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9,7H11L12,9.5L13,7H15L13,12L15,17H13L12,14.5L11,17H9L11,12L9,7M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4Z" /></svg></td>
+        <td class="ignore_status"><input type="checkbox"></td>
+        <td class="add_status"><input type="checkbox"></td>
+        <td class="compare_year">${worksArray[i][3]}</td>
+        <td class="compare_title">${worksArray[i][4]}</td>
+        <td class="compare_isbn">${worksArray[i][5]}</td>
+      </tr>`
+  };
+  console.log(Array.from(compareTable.querySelectorAll('.compare_isbn'))[0]);
+
+};

@@ -384,10 +384,10 @@ i.fa-square-minus {
   height: 1rem;
   width: 1rem;
 }
-.modal-works .have_read svg {
+.modal-works td[data-read='true'] svg {
   fill: green;
 }
-.modal-works .have_not_read svg {
+.modal-works td[data-read='false'] svg {
   fill: red;
 }
 
