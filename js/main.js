@@ -282,6 +282,8 @@ function authorCompare() {
 
   } else if (comparedKeys.length > 1) { // multiple authors to compare
     // need second modal to pick author to compare with from possible selection
+    console.log(comparedKeys);
+    console.log(comparedAuthors.split(', '));
   };
 };
 
@@ -341,9 +343,7 @@ function getAuthorWorks(readISBNs, comparedKeys, compareWorks) {
               let editionISBN = edition.isbn_13[0] || edition.isbn_10[0];
 
               worksArray.push([readStatus,ignoreStatus,addStatus,editionYear,editionTitle,editionISBN]);
-            }
-            
-            console.log(data);
+            };
           })
       };
       buildCompareTable(compareTable, worksArray, readISBNs);
@@ -357,19 +357,125 @@ function buildCompareTable(compareTable, worksArray, readISBNs) {
   // 2b- change 'read' to true and add title to hidden array
   // 3a- run through works to see if title matches with any in hidden array
   // 3b- change 'ignore' to true
+
+  // reminder: compareTable == #modal-table-body
+
   compareTable.innerHTML = '';
 
-  for (let i=0; i<worksArray.length; i++) {
+  for (let i=0; i<worksArray.length; i++) { // builds compare table
     compareTable.innerHTML +=
       `<tr>
         <td class="read_status" data-read="false"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9,7H11L12,9.5L13,7H15L13,12L15,17H13L12,14.5L11,17H9L11,12L9,7M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4Z" /></svg></td>
-        <td class="ignore_status"><input type="checkbox"></td>
         <td class="add_status"><input type="checkbox"></td>
+        <td class="ignore_status"><input type="checkbox"></td>
         <td class="compare_year">${worksArray[i][3]}</td>
         <td class="compare_title">${worksArray[i][4]}</td>
         <td class="compare_isbn">${worksArray[i][5]}</td>
       </tr>`
   };
-  console.log(Array.from(compareTable.querySelectorAll('.compare_isbn'))[0]);
+
+  // console.log(Array.from(compareTable.querySelectorAll('tr'))[0]);
+  // Array.from(compareTable.querySelectorAll('tr'))[i] -- gives each <tr>...</tr> row
+  // console.log(Array.from(compareTable.querySelectorAll('.compare_isbn')));
+  // Array.from(compareTable.querySelectorAll('.compare_isbn'))[i] -- gives <td>ISBN</td> for each
+
+  // need to add data-attribute to row for 'read', 'ignore', and 'added' which all change formatting of row and/or inner parts
+  // while 'read' and 'added' can stack, 'ignore' cannot, so going to combine all to a single data-attribute, and just reuse the 'read' parts for the 'added' section
+
+  let compareTableRows = Array.from(compareTable.querySelectorAll('tr')); // array of objects
+  let readTitles = [];
+
+  for (let i=0; i<compareTableRows.length; i++) {
+    let comparedRow = compareTableRows[i];
+    let comparedRowRead = comparedRow.querySelector('.read_status');
+    let comparedRowIgnore = comparedRow.querySelector('.ignore_status').querySelector('input');
+    let comparedRowAdd = comparedRow.querySelector('.add_status').querySelector('input');
+    let comparedRowTitle = comparedRow.querySelector('.compare_title');
+    let comparedRowISBN = `${comparedRow.querySelector('.compare_isbn').innerHTML}`;
+
+    if (readISBNs.includes(comparedRowISBN)) {
+      // change data-attributes
+      comparedRow.dataset.status = 'read';
+      comparedRowRead.dataset.read = 'true';
+      // change read-icon
+      comparedRowRead.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12S6.5 22 12 22 22 17.5 22 12 17.5 2 12 2M12 20C7.59 20 4 16.41 4 12S7.59 4 12 4 20 7.59 20 12 16.41 20 12 20M16.59 7.58L10 14.17L7.41 11.59L6 13L10 17L18 9L16.59 7.58Z" /></svg>';
+      // add title to hidden array
+      readTitles.push(comparedRowTitle.innerHTML);
+    };
+
+    // adding event listeners on checkboxes as we go through
+    comparedRowIgnore.addEventListener('change', ignoreBook);
+    comparedRowAdd.addEventListener('change', addBook);
+  };
+  // need second run through to set ignore status
+  for (let i=0; i<compareTableRows.length; i++) {
+    let comparedRow = compareTableRows[i];
+    let comparedRowIgnore = comparedRow.querySelector('.ignore_status');
+    let comparedRowTitle = comparedRow.querySelector('.compare_title');
+
+    if (readTitles.includes(comparedRowTitle.innerHTML) && comparedRow.dataset.status != 'read') {
+      comparedRow.dataset.status = 'ignore';
+      comparedRowIgnore.querySelector('input').checked = true;
+    };
+  };
+
+  getCompletion();
+};
+
+function ignoreBook() {
+  if (this.checked) {
+    // "Book is ignored.."
+    this.closest('tr').dataset.status = 'ignore';
+  } else {
+    // "Book is not ignored.."
+    this.closest('tr').dataset.status = '';
+  };
+
+  getCompletion();
+};
+
+function addBook() {
+  if (this.checked) {
+    // "Book is added.."
+    this.closest('tr').dataset.status = 'added';
+  } else {
+    // "Book is not added.."
+    this.closest('tr').dataset.status = '';
+  };
+
+  getCompletion();
+};
+
+function getCompletion() {
+  let comparedBooks = Array.from(document.querySelector('#modal-table-body').querySelectorAll('tr'));
+  let bookTotal = comparedBooks.length;
+  let readTotal = 0;
+  let ignoreTotal = 0;
+  let addTotal = 0;
+
+  for(let i=0; i<comparedBooks.length; i++) {
+    if (comparedBooks[i].dataset.status == 'read') {
+      readTotal++;
+    } else if (comparedBooks[i].dataset.status == 'ignore') {
+      ignoreTotal++;
+    } else if (comparedBooks[i].dataset.status == 'added') {
+      addTotal++;
+    };
+  };
+
+  let completion = document.querySelector('#completion');
+  let completionPercent = Math.round((readTotal + addTotal) / (bookTotal - ignoreTotal) * 100);
+  completion.innerHTML = `Completion: <b>${completionPercent}%</b>`;
+  if (completionPercent == 0) {
+    completion.style.color = 'red';
+  } else if (completionPercent < 33) {
+    completion.style.color = 'coral';
+  } else if (completionPercent < 66) {
+    completion.style.color = 'yellow';
+  } else if (completionPercent < 100) {
+    completion.style.color = 'greenyellow';
+  } else {
+    completion.style.color = 'lime';
+  };
 
 };

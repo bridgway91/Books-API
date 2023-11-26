@@ -169,8 +169,8 @@
 							<thead id="modal-table-head">
 								<tr>
 									<th>Read</th>
-									<th>Ignore</th>
 									<th>Add</th>
+									<th>Ignore</th>
 									<th>Year</th>
 									<th>Title</th>
 									<th>ISBN</th>
@@ -179,8 +179,8 @@
 							<tbody id="modal-table-body">
 								<tr>
 									<td class="read_status" data-read="false"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9,7H11L12,9.5L13,7H15L13,12L15,17H13L12,14.5L11,17H9L11,12L9,7M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4Z" /></svg></td>
-									<td class="ignore_status"><input type="checkbox"></td>
 									<td class="add_status"><input type="checkbox"></td>
+									<td class="ignore_status"><input type="checkbox"></td>
 									<td>2000</td>
 									<td>Title</td>
 									<td>0123456789XXX</td>
@@ -188,12 +188,20 @@
 							</tbody>
 						</table>
 						<div>
-							<p>Completion: <span>0</span>%</p>
+							<p id="completion">Completion: <span>0</span>%</p>
 						</div>
 					</div>
 				</div>
 				<div class="modal" id="modal-select">
-
+					<h2>Choose Author to Compare To...</h2>
+					<div>
+						<img class="photo" src="img\\not_found.jpg">
+						<p>Author 1</p>
+					</div>
+					<div>
+						<img class="photo" src="img\\not_found.jpg">
+						<p>Author 2</p>
+					</div>
 				</div>
 			</section>
 		</main>
