@@ -338,6 +338,8 @@ i.fa-square-minus {
   border: 1px solid black;
   border-radius: 1rem;
   padding: 1.5rem;
+  max-height: 90dvh;
+  overflow-y: auto;
 }
 .modal-header {
   height: minmax(30dvh, 50dvh);
@@ -429,6 +431,7 @@ i.fa-square-minus {
 }
 #modal-select img {
   height: 8rem;
+  aspect-ratio: 9 / 12;
   margin: 0 2rem;
   pointer-events: none;
 }

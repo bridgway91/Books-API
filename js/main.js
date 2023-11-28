@@ -61,9 +61,9 @@ function getBook(){ // takes search parameters and does a general search on Open
             `<div data-isbn="${isbn}" data-authorkeys=${resKeys}>
               <button>${checkList(isbn)}</button>
               <img src="${resCover}" alt="cover">
-              <span>${trimString(resTitle,spanLength)}</span>
-              <span>${trimString(resAuthor,spanLength)}</span>
-              <span>${trimString(resPublisher,spanLength)}</span>
+              <span data-value='${resTitle}'>${trimString(resTitle,spanLength)}</span>
+              <span data-value='${resAuthor}'>${trimString(resAuthor,spanLength)}</span>
+              <span data-value='${resPublisher}'>${trimString(resPublisher,spanLength)}</span>
               <span>${resPubDate}</span>
             </div>`;
         })
@@ -87,9 +87,6 @@ function getBook(){ // takes search parameters and does a general search on Open
     fetch(`https://openlibrary.org/search.json${searchString.split(' ').join('+')}`)
       .then(res => res.json())
       .then(async (data) => {
-        // console.log(data.docs);
-        // console.log(data.docs[0].author_key);
-        // console.log(data.docs[data.docs.length-1].author_name);
         for (let i = 0; i < data.docs.length; i++) {
           if (!data.docs[i].isbn) continue;
           if (!data.docs[i].publisher) continue;
@@ -110,9 +107,9 @@ function getBook(){ // takes search parameters and does a general search on Open
             `<div data-isbn="${resISBN}" data-authorkeys=${resKeys}>
               <button>${checkList(resISBN)}</button>
               <img src="${resCover}" alt="cover">
-              <span>${trimString(resTitle,spanLength)}</span>
-              <span>${trimString(resAuthor,spanLength)}</span>
-              <span>${trimString(resPublisher,spanLength)}</span>
+              <span data-value="${resTitle}">${trimString(resTitle,spanLength)}</span>
+              <span data-value="${trimString(resAuthor,10000)}">${trimString(resAuthor,spanLength)}</span>
+              <span data-value="${resPublisher}">${trimString(resPublisher,spanLength)}</span>
               <span>${resPubDate}</span>
             </div>`;
         }
@@ -120,7 +117,6 @@ function getBook(){ // takes search parameters and does a general search on Open
       .catch(err => {
         console.log(`error ${err}`)
       });
-    // console.log(`data-search`);
   };
 };
 
@@ -135,7 +131,7 @@ function toggleBookList() { // adds or removes individual search result to local
     let addedAuthor = addedTitle.nextElementSibling;
     let addedPublisher = addedAuthor.nextElementSibling;
     let addedPubDate = addedPublisher.nextElementSibling;
-    let value = `${addedTitle.innerText}---${addedAuthor.innerText}---${addedPublisher.innerText}---${addedPubDate.innerText}---${authorKeys}`;
+    let value = `${addedTitle.getAttribute('data-value')}---${addedAuthor.getAttribute('data-value')}---${addedPublisher.getAttribute('data-value')}---${addedPubDate.innerText}---${authorKeys}`;
     localStorage.setItem(key, value);
     updateMyList();
   } else if (event.target.innerHTML == '<i class="fa-regular fa-square-minus"></i>') {
@@ -183,7 +179,7 @@ function updateMyList() { // clears existing list in DOM, then grabs data from l
   let listAuthors = [];
   for (let i=0; i<collection.length; i++) { // builds list in DOM
     if (listAuthors.includes(collection[i][0])) { // if author already exists in DOM list
-      let listSingleAuthor = document.getElementById(`${collection[i][0].replace(' ','')}`);
+      let listSingleAuthor = document.getElementById(`${collection[i][0].replaceAll(' ','')}`);
       let authorBooks = listSingleAuthor.nextElementSibling;
       authorBooks.innerHTML += `<li data-isbn=${collection[i][4]}><span>${collection[i][1]}</span> -- <strong>${collection[i][3]}  :</strong>  ${collection[i][2]}</li>`;
     } else { // if author does not yet exist in DOM list
@@ -267,13 +263,13 @@ function authorCompare() {
   
   const readISBNs = Object.keys(localStorage);
   const comparedKeys = event.target.dataset.authorkeys.split(',');
-  const comparedAuthors = event.target.parentElement.innerText.split('\n')[0]; // dont think i need, but keeping for now
-  // author photo -- `https://covers.openlibrary.org/a/olid/${comparedKeys[i]}-M.jpg`
+  const comparedAuthors = event.target.parentElement.innerText.split('\n')[0];
 
   let modalCompare = document.querySelector('#modal-compare');
   let compareLeft = modalCompare.querySelector('.modal-header-left');
   let compareRight = modalCompare.querySelector('.modal-header-right');
   let compareWorks = modalCompare.querySelector('.modal-works');
+  let compareSelect = document.querySelector('#modal-select');
 
   if (comparedKeys.length == 1) { // one author to compare
     getAuthorBio(comparedKeys, compareLeft, compareRight);
@@ -284,6 +280,32 @@ function authorCompare() {
     // need second modal to pick author to compare with from possible selection
     console.log(comparedKeys);
     console.log(comparedAuthors.split(', '));
+    
+    // getAuthorOptions();
+    let compareOptions = compareSelect.querySelector('#modal-select-options');
+
+    compareOptions.innerHTML = '';
+
+    for (let i=0; i<comparedKeys.length; i++) {
+      let foundPhoto = '';
+      fetch(`https://covers.openlibrary.org/a/olid/${comparedKeys[i]}-M.jpg`)
+        .then(res => {
+          console.log(res);
+          if (res.redirected != true) {
+            foundPhoto = `https://covers.openlibrary.org/a/olid/${comparedKeys[i]}-M.jpg`;
+          } else {
+            foundPhoto = 'img\\not_found.jpg';
+          };
+        })
+        .then(() => {
+          console.log(foundPhoto);
+          compareOptions.innerHTML += 
+            `<div>
+              <img class="photo" src=${foundPhoto}>
+              <p>${comparedAuthors.split(', ')[i]}</p>
+            </div>`;
+        });
+    }
   };
 };
 
@@ -297,7 +319,7 @@ function getAuthorBio(comparedKeys, compareLeft, compareRight) {
       const foundPhoto = await fetch(`https://covers.openlibrary.org/a/olid/${comparedKeys[0]}-M.jpg`)
         .then(res => {
           if (res.redirected != true) {
-            return `https://covers.openlibrary.org/a/olid/OL6791840A-M.jpg`;
+            return `https://covers.openlibrary.org/a/olid/${comparedKeys[0]}-M.jpg`;
           } else {
             return 'img\\not_found.jpg';
           };
@@ -318,7 +340,7 @@ function getAuthorBio(comparedKeys, compareLeft, compareRight) {
     });
 };
 
-function getAuthorWorks(readISBNs, comparedKeys, compareWorks) {
+function getAuthorWorks(readISBNs, comparedKeys, compareWorks) { // still need to adjust first for loop length
   let compareTable = compareWorks.querySelector('#modal-table-body');
 
   fetch(`https://openlibrary.org/authors/${comparedKeys[0]}/works.json?limit=1000`)
@@ -326,28 +348,26 @@ function getAuthorWorks(readISBNs, comparedKeys, compareWorks) {
     .then(async(data) => {
       const authorWorks = data.entries;
       let worksArray = [];
-      console.log(authorWorks);
-      for (let i=0; i<10; i++) { // i<authorWorks.length  // for each i work, run fetch to get editions
+      for (let i=0; i<authorWorks.length; i++) { // i<authorWorks.length  // for each i work, run fetch to get editions
         await fetch(`https://openlibrary.org${authorWorks[i].key}/editions.json?limit=1000`)
           .then(res => res.json())
           .then(data => {
             const authorWorksEditions = data.entries;
             for (let j=0; j<authorWorksEditions.length; j++) { // for each j edition (of a specific i work)
               let edition = authorWorksEditions[j];
-
-              let readStatus = false; // depending on how i handle building table, dont need 3 status'
+              if (!(edition.isbn_13 || edition.isbn_10) || !edition.publish_date || !edition.title) continue;
+              let readStatus = false;
               let ignoreStatus = false;
               let addStatus = false;
               let editionYear = edition.publish_date.length > 4 ? edition.publish_date.slice(-4) : edition.publish_date;
               let editionTitle = edition.title;
-              let editionISBN = edition.isbn_13[0] || edition.isbn_10[0];
+              let editionISBN = (edition.isbn_13 ? edition.isbn_13[0] : 0) || (edition.isbn_10 ? edition.isbn_10[0] : 0);
 
               worksArray.push([readStatus,ignoreStatus,addStatus,editionYear,editionTitle,editionISBN]);
             };
           })
       };
       buildCompareTable(compareTable, worksArray, readISBNs);
-      console.log(worksArray);
     })
 };
 
@@ -410,10 +430,10 @@ function buildCompareTable(compareTable, worksArray, readISBNs) {
   // need second run through to set ignore status
   for (let i=0; i<compareTableRows.length; i++) {
     let comparedRow = compareTableRows[i];
-    let comparedRowIgnore = comparedRow.querySelector('.ignore_status');
+    let comparedRowIgnore = comparedRow.querySelector('.ignore_status'); // getting the <td> container
     let comparedRowTitle = comparedRow.querySelector('.compare_title');
 
-    if (readTitles.includes(comparedRowTitle.innerHTML) && comparedRow.dataset.status != 'read') {
+    if (titleCompare(readTitles, comparedRow, comparedRowTitle)) {
       comparedRow.dataset.status = 'ignore';
       comparedRowIgnore.querySelector('input').checked = true;
     };
@@ -425,10 +445,24 @@ function buildCompareTable(compareTable, worksArray, readISBNs) {
 function ignoreBook() {
   if (this.checked) {
     // "Book is ignored.."
-    this.closest('tr').dataset.status = 'ignore';
+    let thisRow = this.closest('tr');
+    thisRow.dataset.status = 'ignore';
+
+    // let thisRowTitle = thisRow.querySelector('.compare_title');
+    // for (let i=0; i<Array.from(thisRow.parentElement.querySelectorAll('tr')).length; i++) {
+    //   let comparedRow = Array.from(thisRow.parentElement.querySelectorAll('tr'))[i];
+    //   let comparedRowIgnore = comparedRow.querySelector('.ignore_status'); // getting the <td> container
+    //   let comparedRowTitle = comparedRow.querySelector('.compare_title');
+
+    //   if (comparedRowTitle == thisRowTitle) {
+    //     comparedRow.dataset.status = 'ignore';
+    //     comparedRowIgnore.querySelector('input').checked = true;
+    //   };
+    // };
   } else {
     // "Book is not ignored.."
-    this.closest('tr').dataset.status = '';
+    let thisRow = this.closest('tr');
+    thisRow.dataset.status = '';
   };
 
   getCompletion();
@@ -479,3 +513,9 @@ function getCompletion() {
   };
 
 };
+
+function titleCompare(readTitles, comparedRow, comparedRowTitle) { // returns true or false if title is found in [readTitles]
+  return (readTitles.includes(comparedRowTitle.innerHTML) 
+  || readTitles.map(el=>el.toLowerCase().replaceAll("'","").replaceAll("the ","")).includes(comparedRowTitle.innerHTML.toLowerCase().replaceAll("'","").replaceAll("the ",""))) 
+  && comparedRow.dataset.status != 'read';
+}
