@@ -339,7 +339,7 @@ i.fa-square-minus {
   border-radius: 1rem;
   padding: 1.5rem;
   max-height: 90dvh;
-  overflow-y: auto;
+  overflow: auto;
 }
 .modal-header {
   height: minmax(30dvh, 50dvh);
@@ -438,6 +438,7 @@ i.fa-square-minus {
 #modal-select p {
   font-size: 1.5rem;
   pointer-events: none;
+  text-transform: capitalize;
 }
 
 /**************

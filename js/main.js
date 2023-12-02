@@ -340,16 +340,16 @@ function getAuthorBio(comparedKeys, compareLeft, compareRight) {
     });
 };
 
-function getAuthorWorks(readISBNs, comparedKeys, compareWorks) { // still need to adjust first for loop length
+function getAuthorWorks(readISBNs, comparedKeys, compareWorks) {
   let compareTable = compareWorks.querySelector('#modal-table-body');
 
-  fetch(`https://openlibrary.org/authors/${comparedKeys[0]}/works.json?limit=1000`)
+  fetch(`https://openlibrary.org/authors/${comparedKeys[0]}/works.json?limit=100`)
     .then(res => res.json())
     .then(async(data) => {
       const authorWorks = data.entries;
       let worksArray = [];
-      for (let i=0; i<authorWorks.length; i++) { // i<authorWorks.length  // for each i work, run fetch to get editions
-        await fetch(`https://openlibrary.org${authorWorks[i].key}/editions.json?limit=1000`)
+      for (let i=0; i<authorWorks.length; i++) { // for each i work, run fetch to get editions
+        await fetch(`https://openlibrary.org${authorWorks[i].key}/editions.json?limit=100`)
           .then(res => res.json())
           .then(data => {
             const authorWorksEditions = data.entries;
@@ -443,25 +443,26 @@ function buildCompareTable(compareTable, worksArray, readISBNs) {
 };
 
 function ignoreBook() {
+  let thisRow = this.closest('tr');
+  let thisRowTitle = thisRow.querySelector('.compare_title');
+  let thisRowParent = thisRow.parentElement;
+
   if (this.checked) {
     // "Book is ignored.."
-    let thisRow = this.closest('tr');
     thisRow.dataset.status = 'ignore';
 
-    // let thisRowTitle = thisRow.querySelector('.compare_title');
-    // for (let i=0; i<Array.from(thisRow.parentElement.querySelectorAll('tr')).length; i++) {
-    //   let comparedRow = Array.from(thisRow.parentElement.querySelectorAll('tr'))[i];
-    //   let comparedRowIgnore = comparedRow.querySelector('.ignore_status'); // getting the <td> container
-    //   let comparedRowTitle = comparedRow.querySelector('.compare_title');
+    for (let i=0; i<Array.from(thisRowParent.querySelectorAll('tr')).length; i++) {
+      let comparedRow = Array.from(thisRowParent.querySelectorAll('tr'))[i]; // gets <tr> container
+      let comparedRowIgnore = comparedRow.querySelector('.ignore_status'); // getting the <td> for ignore
+      let comparedRowTitle = comparedRow.querySelector('.compare_title'); // getting the <td> for title
 
-    //   if (comparedRowTitle == thisRowTitle) {
-    //     comparedRow.dataset.status = 'ignore';
-    //     comparedRowIgnore.querySelector('input').checked = true;
-    //   };
-    // };
+      if (titleCompare([`${thisRowTitle.innerHTML}`],comparedRow, comparedRowTitle)) {
+        comparedRow.dataset.status = 'ignore';
+        comparedRowIgnore.querySelector('input').checked = true;
+      };
+    };
   } else {
     // "Book is not ignored.."
-    let thisRow = this.closest('tr');
     thisRow.dataset.status = '';
   };
 
@@ -469,9 +470,24 @@ function ignoreBook() {
 };
 
 function addBook() {
+  let thisRow = this.closest('tr');
+  let thisRowTitle = thisRow.querySelector('.compare_title');
+  let thisRowParent = thisRow.parentElement;
+
   if (this.checked) {
     // "Book is added.."
     this.closest('tr').dataset.status = 'added';
+
+    for (let i=0; i<Array.from(thisRowParent.querySelectorAll('tr')).length; i++) {
+      let comparedRow = Array.from(thisRowParent.querySelectorAll('tr'))[i]; // gets <tr> container
+      let comparedRowIgnore = comparedRow.querySelector('.ignore_status'); // getting the <td> for ignore
+      let comparedRowTitle = comparedRow.querySelector('.compare_title'); // getting the <td> for title
+
+      if (titleCompare([`${thisRowTitle.innerHTML}`],comparedRow, comparedRowTitle) && comparedRow.dataset.status != 'added') {
+        comparedRow.dataset.status = 'ignore';
+        comparedRowIgnore.querySelector('input').checked = true;
+      };
+    };
   } else {
     // "Book is not added.."
     this.closest('tr').dataset.status = '';
