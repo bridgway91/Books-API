@@ -13,6 +13,7 @@ document.getElementById('place').addEventListener('input', checkInputs);
 document.getElementById('person').addEventListener('input', checkInputs);
 document.getElementById('publisher').addEventListener('input', checkInputs);
 document.getElementById('lightToggle').addEventListener('click', lightToggle);
+document.getElementById('modal-select').addEventListener('click', pickAuthor);
 
 let isbn, title, author, subject, place, person, publisher, results;
 let spanLength = 30;
@@ -278,8 +279,8 @@ function authorCompare() {
 
   } else if (comparedKeys.length > 1) { // multiple authors to compare
     // need second modal to pick author to compare with from possible selection
-    console.log(comparedKeys);
-    console.log(comparedAuthors.split(', '));
+    // console.log(comparedKeys);
+    // console.log(comparedAuthors.split(', '));
     
     // getAuthorOptions();
     let compareOptions = compareSelect.querySelector('#modal-select-options');
@@ -287,27 +288,16 @@ function authorCompare() {
     compareOptions.innerHTML = '';
 
     for (let i=0; i<comparedKeys.length; i++) {
-      let foundPhoto = '';
-      fetch(`https://covers.openlibrary.org/a/olid/${comparedKeys[i]}-M.jpg`)
-        .then(res => {
-          console.log(res);
-          if (res.redirected != true) {
-            foundPhoto = `https://covers.openlibrary.org/a/olid/${comparedKeys[i]}-M.jpg`;
-          } else {
-            foundPhoto = 'img\\not_found.jpg';
-          };
-        })
-        .then(() => {
-          console.log(foundPhoto);
-          compareOptions.innerHTML += 
-            `<div>
-              <img class="photo" src=${foundPhoto}>
-              <p>${comparedAuthors.split(', ')[i]}</p>
-            </div>`;
-        });
-    }
+        compareOptions.innerHTML += 
+          `<div>
+            <img class="photo" src='https://covers.openlibrary.org/a/olid/${comparedKeys[i]}-M.jpg'>
+            <p data-key=${comparedKeys[i]}>${comparedAuthors.split(', ')[i]}</p>
+          </div>`;
+    };
+
   };
 };
+
 
 function getAuthorBio(comparedKeys, compareLeft, compareRight) {
   fetch(`https://openlibrary.org/authors/${comparedKeys[0]}.json`)
@@ -341,98 +331,100 @@ function getAuthorBio(comparedKeys, compareLeft, compareRight) {
 };
 
 ////////// OLD CODE -- KEEPING IN FOR COMPARISON AND LEARNING SAKE (for getAuthorWorks function)
-// function getAuthorWorks(readISBNs, comparedKeys, compareWorks) {
-//   let compareTable = compareWorks.querySelector('#modal-table-body');
-
-//   fetch(`https://openlibrary.org/authors/${comparedKeys[0]}/works.json?limit=100`)
-//     .then(res => res.json())
-//     .then(async(data) => {
-//       const authorWorks = data.entries;
-//       let worksArray = [];
-//       for (let i=0; i<authorWorks.length; i++) { // for each i work, run fetch to get editions
-//         await fetch(`https://openlibrary.org${authorWorks[i].key}/editions.json?limit=100`)
-//           .then(res => res.json())
-//           .then(data => {
-//             const authorWorksEditions = data.entries;
-//             for (let j=0; j<authorWorksEditions.length; j++) { // for each j edition (of a specific i work)
-//               let edition = authorWorksEditions[j];
-//               if (!(edition.isbn_13 || edition.isbn_10) || !edition.publish_date || !edition.title) continue;
-//               let readStatus = false;
-//               let ignoreStatus = false;
-//               let addStatus = false;
-//               let editionYear = edition.publish_date.length > 4 ? edition.publish_date.slice(-4) : edition.publish_date;
-//               let editionTitle = edition.title;
-//               let editionISBN = (edition.isbn_13 ? edition.isbn_13[0] : 0) || (edition.isbn_10 ? edition.isbn_10[0] : 0);
-
-//               worksArray.push([readStatus,ignoreStatus,addStatus,editionYear,editionTitle,editionISBN]);
-//             };
-//           })
-//       };
-//       buildCompareTable(compareTable, worksArray, readISBNs);
-//     })
-// };
-////////// OLD CODE -- KEEPING IN FOR COMPARISON AND LEARNING SAKE
-
 function getAuthorWorks(readISBNs, comparedKeys, compareWorks) {
   let compareTable = compareWorks.querySelector('#modal-table-body');
-  fetch(
-    `https://openlibrary.org/authors/${comparedKeys[0]}/works.json?limit=100`
-  )
-    .then((res) => res.json())
-    .then(async (data) => {
-      console.log(data);
+
+  fetch(`https://openlibrary.org/authors/${comparedKeys[0]}/works.json?limit=100`)
+    .then(res => res.json())
+    .then(async(data) => {
       const authorWorks = data.entries;
       let worksArray = [];
-      for (let i = 0; i < authorWorks.length; i++) {
-        // for each i work, run fetch to get editions
-        worksArray.push(
-          fetch(
-            `https://openlibrary.org${authorWorks[i].key}/editions.json?limit=100`
-          ).then((res) => res.json())
-        );
-      }
+      for (let i=0; i<authorWorks.length; i++) { // for each i work, run fetch to get editions
+        await fetch(`https://openlibrary.org${authorWorks[i].key}/editions.json?limit=100`)
+          .then(res => res.json())
+          .then(data => {
+            const authorWorksEditions = data.entries;
+            for (let j=0; j<authorWorksEditions.length; j++) { // for each j edition (of a specific i work)
+              let edition = authorWorksEditions[j];
+              if (!(edition.isbn_13 || edition.isbn_10) || !edition.publish_date || !edition.title) continue;
+              let readStatus = false;
+              let ignoreStatus = false;
+              let addStatus = false;
+              let editionYear = edition.publish_date.length > 4 ? edition.publish_date.slice(-4) : edition.publish_date;
+              let editionTitle = edition.title;
+              let editionISBN = (edition.isbn_13 ? edition.isbn_13[0] : 0) || (edition.isbn_10 ? edition.isbn_10[0] : 0);
 
-      Promise.all(worksArray).then((data) => {
-        let resultsArray = [];
-        for (let i = 0; i < data.length; i++) {
-          // for each i work
-          const authorWorksEditions = data[i].entries;
-          for (let j = 0; j < authorWorksEditions.length; j++) {
-            // for each j edition (of a specific i work)
-            let edition = authorWorksEditions[j];
-            if (
-              !(edition.isbn_13 || edition.isbn_10) ||
-              !edition.publish_date ||
-              !edition.title
-            )
-              continue;
-            let readStatus = false;
-            let ignoreStatus = false;
-            let addStatus = false;
-            let editionYear =
-              edition.publish_date.length > 4
-                ? edition.publish_date.slice(-4)
-                : edition.publish_date;
-            let editionTitle = edition.title;
-            let editionISBN =
-              (edition.isbn_13 ? edition.isbn_13[0] : 0) ||
-              (edition.isbn_10 ? edition.isbn_10[0] : 0);
-
-            resultsArray.push([
-              readStatus,
-              ignoreStatus,
-              addStatus,
-              editionYear,
-              editionTitle,
-              editionISBN,
-            ]);
-          }
-        }
-        buildCompareTable(compareTable, resultsArray, readISBNs);
-      });
-      
-    });
+              worksArray.push([readStatus,ignoreStatus,addStatus,editionYear,editionTitle,editionISBN]);
+            };
+          })
+      };
+      buildCompareTable(compareTable, worksArray, readISBNs);
+    })
 };
+////////// OLD CODE -- KEEPING IN FOR COMPARISON AND LEARNING SAKE
+
+////////// NEW CODE -- STOPPED WORKING DUE TO SOME 'CORS' ERROR OR SOMETHING
+// function getAuthorWorks(readISBNs, comparedKeys, compareWorks) {
+//   let compareTable = compareWorks.querySelector('#modal-table-body');
+//   fetch(
+//     `https://openlibrary.org/authors/${comparedKeys[0]}/works.json?limit=100`
+//   )
+//     .then((res) => res.json())
+//     .then(async (data) => {
+//       console.log(data);
+//       const authorWorks = data.entries;
+//       let worksArray = [];
+//       for (let i = 0; i < authorWorks.length; i++) {
+//         // for each i work, run fetch to get editions
+//         worksArray.push(
+//           fetch(
+//             `https://openlibrary.org${authorWorks[i].key}/editions.json?limit=100`
+//           ).then((res) => res.json())
+//         );
+//       }
+
+//       Promise.all(worksArray).then((data) => {
+//         let resultsArray = [];
+//         for (let i = 0; i < data.length; i++) {
+//           // for each i work
+//           const authorWorksEditions = data[i].entries;
+//           for (let j = 0; j < authorWorksEditions.length; j++) {
+//             // for each j edition (of a specific i work)
+//             let edition = authorWorksEditions[j];
+//             if (
+//               !(edition.isbn_13 || edition.isbn_10) ||
+//               !edition.publish_date ||
+//               !edition.title
+//             )
+//               continue;
+//             let readStatus = false;
+//             let ignoreStatus = false;
+//             let addStatus = false;
+//             let editionYear =
+//               edition.publish_date.length > 4
+//                 ? edition.publish_date.slice(-4)
+//                 : edition.publish_date;
+//             let editionTitle = edition.title;
+//             let editionISBN =
+//               (edition.isbn_13 ? edition.isbn_13[0] : 0) ||
+//               (edition.isbn_10 ? edition.isbn_10[0] : 0);
+
+//             resultsArray.push([
+//               readStatus,
+//               ignoreStatus,
+//               addStatus,
+//               editionYear,
+//               editionTitle,
+//               editionISBN,
+//             ]);
+//           }
+//         }
+//         buildCompareTable(compareTable, resultsArray, readISBNs);
+//       });
+      
+//     });
+// };
+////////// NEW CODE -- STOPPED WORKING DUE TO SOME 'CORS' ERROR OR SOMETHING
 
 function buildCompareTable(compareTable, worksArray, readISBNs) {
   // 1- add all works to compare table
@@ -597,4 +589,21 @@ function titleCompare(readTitles, comparedRow, comparedRowTitle) { // returns tr
   return (readTitles.includes(comparedRowTitle.innerHTML) 
   || readTitles.map(el=>el.toLowerCase().replaceAll("'","").replaceAll("the ","")).includes(comparedRowTitle.innerHTML.toLowerCase().replaceAll("'","").replaceAll("the ",""))) 
   && comparedRow.dataset.status != 'read';
+}
+
+function pickAuthor() {
+  if (event.target.tagName != 'DIV') return;
+  let chosenAuthor = event.target;
+  let chosenAuthorKey = chosenAuthor.querySelector('p').dataset.key;
+
+  const readISBNs = Object.keys(localStorage);
+  const comparedKeys = [`${chosenAuthorKey}`];
+  let modalCompare = document.querySelector('#modal-compare');
+  let compareLeft = modalCompare.querySelector('.modal-header-left');
+  let compareRight = modalCompare.querySelector('.modal-header-right');
+  let compareWorks = modalCompare.querySelector('.modal-works');
+
+  getAuthorBio(comparedKeys, compareLeft, compareRight);
+
+  getAuthorWorks(readISBNs, comparedKeys, compareWorks);
 }
