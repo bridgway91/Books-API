@@ -340,6 +340,8 @@ i.fa-square-minus {
   border-radius: 1rem;
   padding: 1.5rem;
   max-height: 90dvh;
+  max-width: 75%;
+  margin: 5dvh auto;
   position: relative;
   overflow: auto;
 }
@@ -348,6 +350,7 @@ i.fa-square-minus {
   border-bottom: 1px solid black;
   display: flex;
   position: absolute;
+  padding: 1rem;
 }
 .modal-header-left {
   border-right: 1px solid black;
@@ -359,6 +362,7 @@ i.fa-square-minus {
 }
 .modal-header-left .photo {
   height: 12rem;
+  margin: 5px 25%;
 }
 .modal-header-right {
   position: relative;
@@ -442,6 +446,7 @@ i.fa-square-minus {
   background-color: rgba(80, 80, 80, 1);
   padding: 0.5rem;
   text-align: right;
+  margin-bottom: 10rem;
 }
 
 #modal-select h2 {

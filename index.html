@@ -79,30 +79,7 @@
 							<span>Publish Date</span>
 						</div>
 						<section id="search-results">
-							<div id="result-0">
-								<button><i class="fa-regular fa-square-plus"></i></button>
-								<img src="img\The_Fellowship_Of_The_Ring.jpg" alt="cover">
-								<span>Title</span>
-								<span>Book Writer</span>
-								<span>Orbit</span>
-								<span>01/01/2000</span>
-							</div>
-							<div id="result-1">
-								<button><i class="fa-regular fa-square-plus"></i></button>
-								<img src="img\The_Fellowship_Of_The_Ring.jpg" alt="cover">
-								<span>Title</span>
-								<span>Author</span>
-								<span>Publisher</span>
-								<span>Publish Date</span>
-							</div>
-							<div id="result-2">
-								<button><i class="fa-regular fa-square-plus"></i></button>
-								<img src="img\The_Fellowship_Of_The_Ring.jpg" alt="cover">
-								<span>Title</span>
-								<span>Author</span>
-								<span>Publisher</span>
-								<span>Publish Date</span>
-							</div>
+							
 						</section>
 					</div>
 				</section>
@@ -151,14 +128,14 @@
 						</ul>
 					</div>
 				</section>
-				<div class="modal" id="modal-compare">
+				<dialog class="modal" id="modal-compare">
 					<div class="modal-header">
 						<div class="modal-header-left">
 							<h2>Brent Weeks</h2>
 							<img class="photo" src="img\\not_found.jpg">
 						</div>
 						<div class="modal-header-right">
-							<button>&times;</button>
+							<button type="button" class="close" id="closeModal">X</button>
 							<p><span>Birth Date: </span>...</p>
 							<p><span>Bio: </span>...</p>
 							<a>WikipediaLink</a>
@@ -191,8 +168,8 @@
 							<p id="completion">Completion: <span>0</span>%</p>
 						</div>
 					</div>
-				</div>
-				<div class="modal" id="modal-select">
+				</dialog>
+				<dialog class="modal" id="modal-select">
 					<h2>Choose Author to Compare To...</h2>
 					<section id="modal-select-options">
 						<div>
@@ -204,7 +181,7 @@
 							<p>Author 2</p>
 						</div>
 					</section>
-				</div>
+				</dialog>
 			</section>
 		</main>
 		<script type="text/javascript" src="js/main.js"></script>

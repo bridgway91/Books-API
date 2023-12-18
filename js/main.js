@@ -14,6 +14,7 @@ document.getElementById('person').addEventListener('input', checkInputs);
 document.getElementById('publisher').addEventListener('input', checkInputs);
 document.getElementById('lightToggle').addEventListener('click', lightToggle);
 document.getElementById('modal-select').addEventListener('click', pickAuthor);
+document.getElementById('closeModal').addEventListener('click',closeModal);
 
 let isbn, title, author, subject, place, person, publisher, results;
 let spanLength = 30;
@@ -260,6 +261,7 @@ function setLighting() { // actually changes lighting mode on site, plus changin
 
 function authorCompare() {
   if (event.target.tagName != 'BUTTON') return;
+  if (Array.from(event.target.classList).includes('close')) document.querySelector('#modal-compare').close();
   if (!Array.from(event.target.classList).includes('compare')) return;
   
   const readISBNs = Object.keys(localStorage);
@@ -272,7 +274,10 @@ function authorCompare() {
   let compareWorks = modalCompare.querySelector('.modal-works');
   let compareSelect = document.querySelector('#modal-select');
 
+
   if (comparedKeys.length == 1) { // one author to compare
+    modalCompare.showModal();
+
     getAuthorBio(comparedKeys, compareLeft, compareRight);
 
     getAuthorWorks(readISBNs, comparedKeys, compareWorks);
@@ -281,6 +286,8 @@ function authorCompare() {
     // need second modal to pick author to compare with from possible selection
     // console.log(comparedKeys);
     // console.log(comparedAuthors.split(', '));
+
+    compareSelect.showModal();
     
     // getAuthorOptions();
     let compareOptions = compareSelect.querySelector('#modal-select-options');
@@ -320,7 +327,7 @@ function getAuthorBio(comparedKeys, compareLeft, compareRight) {
         `<h2>${foundName}</h2>
         <img class="photo" src=${foundPhoto}>`;
       compareRight.innerHTML = 
-        `<button>&times;</button>
+        `<button class="close" id="closeModal">&times;</button>
         <p><span>Birth Date: </span>${foundBirthdate}</p>
         <p><span>Bio: </span>${foundBio}</p>
         <a href="${foundWiki}" target=_blank>${foundWiki}</a>`;
@@ -593,6 +600,10 @@ function titleCompare(readTitles, comparedRow, comparedRowTitle) { // returns tr
 
 function pickAuthor() {
   if (event.target.tagName != 'DIV') return;
+
+  document.querySelector('#modal-select').close();
+  document.querySelector('#modal-compare').showModal();
+
   let chosenAuthor = event.target;
   let chosenAuthorKey = chosenAuthor.querySelector('p').dataset.key;
 
